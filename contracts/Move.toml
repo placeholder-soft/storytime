@@ -1,0 +1,9 @@
+[package]
+name = "storytime"
+version = "0.0.1"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "devnet-v1.15.0" }
+
+[addresses]
+storytime = "0x0"
