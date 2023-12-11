@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ZKLoginClient, client } from "./zklogin.store";
+import { useEffect, useState } from "react";
+import { ZKLoginStore, client, upsertSalt } from "./zklogin.store";
 import queryString from "query-string";
 import { useLocation, useNavigate } from "react-router";
 import { useSuiClientQuery } from "@mysten/dapp-kit";
@@ -26,7 +26,7 @@ function getTransactionBlock(sender: string): TransactionBlock {
   return txb;
 }
 
-export function ZKLogin() {
+export const ZKLogin = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -38,26 +38,40 @@ export function ZKLogin() {
 
   const [suiToken, setSuiToken] = useState<bigint>(1n);
 
-  const store = useMemo(() => {
-    const oauthParams = queryString.parse(location.hash);
-    if (oauthParams && oauthParams.id_token) {
-      const store = new ZKLoginClient(oauthParams.id_token as string);
-      return store;
-    }
+  const [store, setStore] = useState<ZKLoginStore>(new ZKLoginStore());
 
-    return new ZKLoginClient();
-  }, [location]);
+  useEffect(() => {
+    (async () => {
+      const oauthParams = queryString.parse(location.hash);
+      if (
+        oauthParams &&
+        oauthParams.id_token &&
+        store.info?.id_token !== oauthParams.id_token
+      ) {
+        const salt = await upsertSalt(oauthParams.id_token as string);
+        const store = new ZKLoginStore({
+          salt,
+          id_token: oauthParams.id_token as string,
+        });
+        setStore(store);
+      }
+    })();
+  }, [location.hash, store.info?.id_token]);
 
   const { data: addressBalance } = useSuiClientQuery(
     "getBalance",
     {
-      owner: store.id_token ? store.userAddress : "",
+      owner: store.client ? store.client.userAddress : "",
     },
     {
-      // enabled: store.id_token ? Boolean(store.userAddress) : false,
-      // refetchInterval: 1500,
+      enabled: store.client ? Boolean(store.client.userAddress) : false,
+      refetchInterval: 1500,
     }
   );
+
+  if (store == null) {
+    return <div>loading...</div>;
+  }
 
   return (
     <div style={{ padding: 20 }}>
@@ -71,7 +85,7 @@ export function ZKLogin() {
           reset config
         </button>
       </div>
-      <div>userAddress: {store.id_token ? store.userAddress : ""}</div>
+      <div>userAddress: {store.client ? store.client.userAddress : ""}</div>
       <div>
         Balance:{" "}
         {addressBalance?.totalBalance
@@ -87,9 +101,9 @@ export function ZKLogin() {
       </div>
       <div>
         <div>
-          Google Auth Status: {store.id_token ? "logged in" : "not logged in"}
+          Google Auth Status: {store.client ? "logged in" : "not logged in"}
         </div>
-        {store.id_token == null && (
+        {store.client == null && (
           <button
             onClick={() => {
               store.signInWithGoogle();
@@ -99,18 +113,18 @@ export function ZKLogin() {
           </button>
         )}
       </div>
-      {store.id_token && (
+      {store.client && (
         <div>
           <button
             onClick={() => {
-              store.requestTestSUIToken();
+              store.client?.requestTestSUIToken();
             }}
           >
             request test SUI token
           </button>
         </div>
       )}
-      {store.id_token && (
+      {store.client && (
         <div
           style={{
             flex: 1,
@@ -166,7 +180,7 @@ export function ZKLogin() {
                   suiToken * 1000000000n,
                 ]);
                 txb.transferObjects([coin], address);
-                txb.setSender(store.userAddress);
+                txb.setSender(store.client!.userAddress);
 
                 const { bytes, signature } = await txb.sign({
                   client,
@@ -175,7 +189,7 @@ export function ZKLogin() {
 
                 const res = await client.executeTransactionBlock({
                   transactionBlock: bytes,
-                  signature: store.genZkLoginSignature(signature),
+                  signature: store.client!.genZkLoginSignature(signature),
                 });
                 setDigest(res.digest);
               }}
@@ -186,7 +200,7 @@ export function ZKLogin() {
           <div>
             <button
               onClick={async () => {
-                const tx = getTransactionBlock(store.userAddress);
+                const tx = getTransactionBlock(store.client!.userAddress);
 
                 const { bytes, signature } = await tx.sign({
                   client,
@@ -195,7 +209,7 @@ export function ZKLogin() {
 
                 const res = await client.executeTransactionBlock({
                   transactionBlock: bytes,
-                  signature: store.genZkLoginSignature(signature),
+                  signature: store.client!.genZkLoginSignature(signature),
                 });
 
                 setDigest(res.digest);
@@ -208,4 +222,4 @@ export function ZKLogin() {
       )}
     </div>
   );
-}
+};

@@ -11,6 +11,9 @@ import {
   jwtToAddress,
 } from "@mysten/zklogin";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { auth, db } from "../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 
 const CLIENT_ID =
   "78105453039-rc9sdmkol2dej5u365dfgq6bjeopmu0f.apps.googleusercontent.com";
@@ -27,32 +30,26 @@ export type PartialZkLoginSignature = Omit<
   "addressSeed"
 >;
 
-export class ZKLoginClient {
+export class ZKLoginStore {
   public initialized = false;
-  private readonly jwtPayload: JwtPayload | undefined;
 
   ephemeralKeyPair!: Ed25519Keypair;
-  private epoch!: {
+  epoch?: {
     currentEpoch: number;
     maxEpoch: number;
   };
-  private nonce!: {
+  nonce?: {
     randomness: string;
     currentNonce: string;
   };
 
-  private partialZkLoginSignature: PartialZkLoginSignature | undefined;
+  client?: ZKLoginClient;
 
-  constructor(readonly id_token?: string) {
-    if (id_token) {
-      this.jwtPayload = jwtDecode(id_token);
-    }
-
+  constructor(readonly info?: { salt: string; id_token: string }) {
     this.initailize();
   }
 
   resetStorage() {
-    // window.localStorage.removeItem("salt");
     window.sessionStorage.removeItem("ephemeralKeyPair");
     window.sessionStorage.removeItem("randomness");
   }
@@ -60,36 +57,20 @@ export class ZKLoginClient {
   private async initailize() {
     this.genEphemeralKeyPair();
     await this.getEpoch();
-    await this.genNone();
-    if (this.id_token) {
-      await this.genPartialZkLoginSignature();
+    this.genNone();
+
+    if (this.info != null) {
+      this.client = new ZKLoginClient(this, this.info.salt, this.info.id_token);
     }
+
     this.initialized = true;
-  }
-
-  private get salt() {
-    const salt = window.localStorage.getItem("salt");
-    if (salt === null) {
-      const salt = generateRandomness();
-      window.localStorage.setItem("salt", salt);
-      return salt;
-    }
-    return salt;
-  }
-
-  get userAddress() {
-    if (!this.id_token) {
-      throw new Error("jwtString is not defined");
-    }
-    const zkLoginUserAddress = jwtToAddress(this.id_token, this.salt);
-    return zkLoginUserAddress;
   }
 
   private get publicKey() {
     return this.ephemeralKeyPair.getPublicKey();
   }
 
-  private get extendedEphemeralPublicKey() {
+  get extendedEphemeralPublicKey() {
     return getExtendedEphemeralPublicKey(this.ephemeralKeyPair.getPublicKey());
   }
 
@@ -117,7 +98,11 @@ export class ZKLoginClient {
     };
   }
 
-  private async genNone() {
+  private genNone() {
+    if (this.epoch == null) {
+      throw new Error("epoch is not defined");
+    }
+
     let randomness = window.sessionStorage.getItem("randomness");
     if (randomness === null) {
       randomness = generateRandomness();
@@ -137,6 +122,10 @@ export class ZKLoginClient {
   }
 
   async signInWithGoogle() {
+    if (this.nonce == null) {
+      throw new Error("nonce is not defined");
+    }
+
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
       redirect_uri: REDIRECT_URI,
@@ -147,6 +136,31 @@ export class ZKLoginClient {
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
     // window.location.replace(loginURL);
     window.location.href = loginURL;
+  }
+}
+
+class ZKLoginClient {
+  private readonly jwtPayload: JwtPayload;
+
+  private partialZkLoginSignature: PartialZkLoginSignature | undefined;
+
+  constructor(
+    readonly store: ZKLoginStore,
+    readonly salt: string,
+    readonly id_token: string
+  ) {
+    this.jwtPayload = jwtDecode(id_token);
+
+    this.initailize();
+  }
+
+  private async initailize() {
+    await this.genPartialZkLoginSignature();
+  }
+
+  get userAddress() {
+    const zkLoginUserAddress = jwtToAddress(this.id_token, this.salt);
+    return zkLoginUserAddress;
   }
 
   async requestTestSUIToken() {
@@ -169,6 +183,10 @@ export class ZKLoginClient {
       throw new Error("jwtString is not defined");
     }
 
+    if (!this.store.nonce || !this.store.epoch) {
+      throw new Error("nonce or epoch is not defined");
+    }
+
     const zkProofResult = await fetch(PROVER_URL, {
       method: "POST",
       headers: {
@@ -176,9 +194,9 @@ export class ZKLoginClient {
       },
       body: JSON.stringify({
         jwt: this.id_token,
-        extendedEphemeralPublicKey: this.extendedEphemeralPublicKey,
-        maxEpoch: this.epoch.maxEpoch,
-        jwtRandomness: this.nonce.randomness,
+        extendedEphemeralPublicKey: this.store.extendedEphemeralPublicKey,
+        maxEpoch: this.store.epoch.maxEpoch,
+        jwtRandomness: this.store.nonce.randomness,
         salt: this.salt,
         keyClaimName: "sub",
       }),
@@ -201,8 +219,8 @@ export class ZKLoginClient {
   }
 
   genZkLoginSignature(signature: string) {
-    if (!this.initialized) {
-      throw new Error("not initialized");
+    if (!this.store.epoch) {
+      throw new Error("epoch is not defined");
     }
 
     if (!this.partialZkLoginSignature) {
@@ -214,8 +232,39 @@ export class ZKLoginClient {
         ...this.partialZkLoginSignature,
         addressSeed: this.addressSeed,
       },
-      maxEpoch: this.epoch.maxEpoch,
+      maxEpoch: this.store.epoch.maxEpoch,
       userSignature: signature,
     }) as SerializedSignature;
   }
 }
+
+export const upsertSalt = async (id_token: string) => {
+  const credential = GoogleAuthProvider.credential(id_token);
+  await signInWithCredential(auth, credential);
+
+  if (auth.currentUser?.uid == null) {
+    throw new Error("auth.currentUser?.uid is not defined");
+  }
+  const docRef = doc(db, "users", auth.currentUser.uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+
+    if (data?.salt) {
+      return data.salt;
+    }
+  }
+
+  const salt = generateRandomness();
+
+  setDoc(
+    docRef,
+    {
+      salt,
+    },
+    { merge: true }
+  );
+
+  return salt;
+};
