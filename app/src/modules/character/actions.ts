@@ -14,10 +14,11 @@ export const createCharacter = (
   data,
 });
 
+type CreateCharacterSuccessBody = { blob: Blob; characterName: string };
 export type CreateCharacterSuccessAction = Action & {
-  data: Blob;
+  data: CreateCharacterSuccessBody;
 };
-export const createCharacterSuccess = (data: Blob) => ({
+export const createCharacterSuccess = (data: CreateCharacterSuccessBody) => ({
   type: CREATE_CHARACTER_SUCCESS,
   data,
 });

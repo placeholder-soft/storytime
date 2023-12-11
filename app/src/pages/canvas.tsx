@@ -1,8 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Canvas from "../components/Canvas";
 import Preview from "../components/Preview";
+import { characterImageSelector } from "../modules/character/selectors";
+import { createCharacter } from "../modules/character/actions";
 
 const Container = styled.div`
   display: flex;
@@ -12,29 +15,17 @@ const Container = styled.div`
 const CanvasPage = () => {
   const [sketchBlob, setSketchBlob] = useState<Blob>(new Blob());
   const [prompt, setPrompt] = useState("");
-  const [preview, setPreview] = useState<Blob>(new Blob());
-  const convert = () => {
-    const formData = new FormData();
-    formData.append("sketch_file", sketchBlob);
-    formData.append("prompt", prompt);
+  const dispatch = useDispatch();
+  const characterIamge = useSelector(characterImageSelector);
+  const navigate = useNavigate();
 
-    axios
-      .post(
-        "https://clipdrop-api.co/sketch-to-image/v1/sketch-to-image",
-        formData,
-        {
-          headers: {
-            "x-api-key": import.meta.env.VITE_CLIPDROP_SECRET,
-          },
-          responseType: "blob",
-        },
-      )
-      .then((response) => {
-        setPreview(response.data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+  const convert = () => {
+    dispatch(createCharacter({ sketchBlob, prompt }));
+
+    // TODO: refactor later
+    setTimeout(() => {
+      navigate("/story");
+    }, 2000);
   };
 
   return (
@@ -48,7 +39,7 @@ const CanvasPage = () => {
             onChange={(e) => setPrompt(e.target.value)}
           />
         </div>
-        <Preview data={preview} />
+        <Preview data={characterIamge} />
       </Container>
       <div>
         <button onClick={convert}>Convert</button>

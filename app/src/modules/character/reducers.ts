@@ -5,9 +5,11 @@ import {
 
 // Initial State
 export type CharacterState = {
+  characterName: string;
   characterImage: Blob;
 };
 const initialState: CharacterState = {
+  characterName: "",
   characterImage: new Blob(),
 };
 
@@ -17,8 +19,10 @@ const characterReducer = (
   action: CreateCharacterSuccessAction
 ) => {
   switch (action.type) {
-    case CREATE_CHARACTER_SUCCESS:
-      return { ...state, characterImage: action.data };
+    case CREATE_CHARACTER_SUCCESS: {
+      const { blob, characterName } = action.data;
+      return { ...state, characterImage: blob, characterName };
+    }
     default:
       return state;
   }
