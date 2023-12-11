@@ -2,6 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Container, Flex, Heading, Text } from "@radix-ui/themes";
 import { OwnedObjects } from "./OwnedObjects";
 import { Mint } from "./Mint";
+import { Query } from "./Query";
 import { ZKLogin } from "./ZKLogin";
 
 export function WalletStatus() {
@@ -19,9 +20,14 @@ export function WalletStatus() {
       ) : (
         <Text>Wallet not connected</Text>
       )}
+      <h1>Owned Objects</h1>
       <OwnedObjects />
+      <h1>Mint</h1>
       <Mint />
+      <h1>zklogin</h1>
       <ZKLogin />
+      <h1>Query</h1>
+      <Query />
     </Container>
   );
 }
