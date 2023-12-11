@@ -40,7 +40,6 @@ export type SceneOption = { content: string; value: string };
 export type Scene = {
   id: string;
   projectId: string;
-  imageUrl: string;
   index: number;
   content: string;
   options: SceneOption[];
