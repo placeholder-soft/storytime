@@ -33,4 +33,8 @@ Generate image base on current scene:
   console.log(`response: ${JSON.stringify(response, null, 2)}`);
 }
 
-generateImage();
+async function main() {
+  await Promise.all([0, 1, 2, 3].map(() => generateImage()));
+}
+
+main();
