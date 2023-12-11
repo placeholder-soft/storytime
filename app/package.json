@@ -10,18 +10,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "firebase": "^10.7.1",
-    "model": "../model",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router": "^6.20.1",
-    "react-router-dom": "^6.20.1",
     "@mysten/dapp-kit": "0.10.2",
     "@mysten/sui.js": "0.48.0",
+    "@mysten/zklogin": "^0.3.9",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/themes": "^2.0.0",
-    "@tanstack/react-query": "^5.0.0"
+    "@tanstack/react-query": "^5.0.0",
+    "bignumber.js": "^9.1.2",
+    "firebase": "^10.7.1",
+    "jwt-decode": "^4.0.0",
+    "model": "../model",
+    "query-string": "^8.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router": "^6.20.1",
+    "react-router-dom": "^6.20.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
