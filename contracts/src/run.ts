@@ -16,15 +16,14 @@ async function main() {
   const txb = new TransactionBlock();
   // txb.setSender(sender);
   // txb.setGasPrice(5);
-  // txb.setGasBudget(5_000_000);
+  txb.setGasBudget(5_000_000);
 
   txb.moveCall({
-    target: `${env.STORY_TIME_ADDRESS}::story_nft::mint`,
+    target: `0xebc67aa17051eaea7c373e5b72c267dcd7267ce060e79479559eee3eaee3f49b::story_nft_display::mint`,
     arguments: [
       txb.pure('image 2'),
-      txb.pure('descs'),
       txb.pure(
-        'https://plus.unsplash.com/premium_photo-1669324357471-e33e71e3f3d8?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'premium_photo-1669324357471-e33e71e3f3d8?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       ),
     ],
   });
