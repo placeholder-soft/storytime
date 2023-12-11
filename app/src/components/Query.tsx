@@ -1,7 +1,7 @@
 import { useSuiClientQuery } from "@mysten/dapp-kit";
 
 export function Query() {
-  const { data, isPending, isError, error, refetch } = useSuiClientQuery(
+  const { data, isPending, isError, error } = useSuiClientQuery(
     "getObject",
     {
       id: "0x1187a4e4af2935443758fc285838faec521f6d6871266f271b91ad2de886cabc",

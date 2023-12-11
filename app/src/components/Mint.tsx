@@ -1,5 +1,4 @@
 import {
-  ConnectButton,
   useCurrentAccount,
   useSignAndExecuteTransactionBlock,
   useSignTransactionBlock,
