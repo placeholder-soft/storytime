@@ -130,7 +130,7 @@ export class ZKLoginStore {
       client_id: CLIENT_ID,
       redirect_uri: REDIRECT_URI,
       response_type: "id_token",
-      scope: "openid",
+      scope: "openid email",
       nonce: this.nonce.currentNonce,
     });
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
@@ -150,6 +150,8 @@ class ZKLoginClient {
     readonly id_token: string
   ) {
     this.jwtPayload = jwtDecode(id_token);
+
+    console.log(this.jwtPayload);
 
     this.initailize();
   }
