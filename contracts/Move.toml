@@ -6,4 +6,4 @@ version = "0.0.1"
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "devnet-v1.15.0" }
 
 [addresses]
-storytime = "0xcc8c78580574f9af04995ac822597ce4b5bb1e0193e1238e619516386029765b"
+storytime = "0x0"

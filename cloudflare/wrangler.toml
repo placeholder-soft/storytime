@@ -1,4 +1,4 @@
-name = "cloudflare"
+name = "storytime"
 main = "src/index.ts"
 compatibility_date = "2023-12-06"
 
