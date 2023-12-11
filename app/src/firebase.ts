@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -9,8 +10,9 @@ const firebaseConfig = {
   projectId: "storytime-web3",
   storageBucket: "storytime-web3.appspot.com",
   messagingSenderId: "78105453039",
-  appId: "1:78105453039:web:6a26d0837ad1285241561a"
+  appId: "1:78105453039:web:6a26d0837ad1285241561a",
 };
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);

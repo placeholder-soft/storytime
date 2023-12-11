@@ -1,9 +1,18 @@
-export type Project = {
-  name: string
-  createdAt: number
-}
+export type Character =
+  | {
+      type: "human" | "dog" | "cat";
+    }
+  | {
+      type: "custom";
+      name: string;
+    };
 
-export type Image = {
-  prompt: string
-  url: string
-}
+// user/{uid}/projects/{projectId}
+export type Project = {
+  character: Character;
+  name: string;
+  createdAt: number;
+  minted: boolean;
+  title: string;
+  image: string;
+};

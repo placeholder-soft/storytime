@@ -1,37 +1,36 @@
-import { ConnectButton } from "@mysten/dapp-kit";
-import { Box, Container, Flex, Heading } from "@radix-ui/themes";
-import { WalletStatus } from "../components/WalletStatus.tsx";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  User,
+} from "firebase/auth";
+import { auth } from "../firebase.ts";
 
 export default function App() {
+  const [user, setUser] = useState<User | null>();
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+  }, []);
+  if (user === undefined) {
+    return <div>Loading...</div>;
+  }
+  if (user != null) {
+    return <Navigate to="/dashboard" />;
+  }
   return (
-    <>
-      <Flex
-        position="sticky"
-        px="4"
-        py="2"
-        justify="between"
-        style={{
-          borderBottom: "1px solid var(--gray-a2)",
+    <div>
+      <button
+        onClick={async () => {
+          const provider = new GoogleAuthProvider();
+          await signInWithPopup(auth, provider);
         }}
       >
-        <Box>
-          <Heading>dApp Starter Template</Heading>
-        </Box>
-
-        <Box>
-          <ConnectButton />
-        </Box>
-      </Flex>
-      <Container>
-        <Container
-          mt="5"
-          pt="2"
-          px="4"
-          style={{ background: "var(--gray-a2)", minHeight: 500 }}
-        >
-          <WalletStatus />
-        </Container>
-      </Container>
-    </>
+        Continue with Google
+      </button>
+    </div>
   );
 }
