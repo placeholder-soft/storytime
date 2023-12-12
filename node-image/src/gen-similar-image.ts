@@ -6,7 +6,7 @@ import axios from "axios";
 
 async function generateImage() {
   const openai = new OpenAI({
-    apiKey: "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",
+    apiKey: process.env.OPENAI_API_KEY,
   });
 
   const imageUrl =
