@@ -1,11 +1,4 @@
-export type Character =
-  | {
-      type: "human" | "dog" | "cat";
-    }
-  | {
-      type: "custom";
-      name: string;
-    };
+export type Character = { type: string; name: string };
 
 // user/{uid}/projects/{projectId}
 
@@ -33,6 +26,7 @@ export type Project = {
   introduction: string;
   coverImage: string;
   rawPrompts: RawPrompt[];
+  scenes: Scene[];
 };
 
 // content is to display, value is what user give prompt to
@@ -40,13 +34,7 @@ export type SceneOption = { content: string; value: string };
 
 // not sure if we should just put this under Project Model or use relation, all works for me
 export type Scene = {
-  id: string;
-  projectId: string;
-  title: string; // project
-  introduction: string; // project
   type: "story-introduction" | "story-followup" | "story-ending";
-  character: string;
-  setting: string;
   sceneNumber: number;
   sceneTitle: string;
   sceneImage: string;

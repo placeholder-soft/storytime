@@ -4,17 +4,22 @@ import { RootState } from "..";
 // Assuming your state structure has a counter object
 const getCharacterBase = (state: RootState) => state.character;
 
+export const characterBaseSelector = createSelector(
+  [getCharacterBase],
+  (character) => character,
+);
+
 export const characterImageSelector = createSelector(
   [getCharacterBase],
-  ({ characterImage }) => characterImage
+  ({ characterImage }) => characterImage,
 );
 
 export const characterNameSelector = createSelector(
   [getCharacterBase],
-  ({ characterName }) => characterName
+  ({ characterName }) => characterName,
 );
 
 export const characterTypeSelector = createSelector(
   [getCharacterBase],
-  ({ characterType }) => characterType
+  ({ characterType }) => characterType,
 );
