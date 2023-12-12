@@ -1,7 +1,7 @@
 /// <reference types="vite-plugin-svgr/client" />
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Canvas from "../../components/Canvas";
 import {
@@ -16,6 +16,7 @@ import { Header } from "../../components/Layout/Layout";
 import { Button, DropdownMenu, TextField } from "@radix-ui/themes";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import { CHARACTER_BASE } from "../../shared/characterTypes";
+import { debounce } from "lodash";
 
 const PreviewContainer = styled.div`
   position: relative;
@@ -139,10 +140,10 @@ const CanvasPage = () => {
     }
   }, [characterType]);
 
-  const renderPreview = (val) => {
+  const renderPreview = debounce((val) => {
     setSketchBlob(val);
     dispatch(createCharacterImage({ sketchBlob: val, prompt }));
-  };
+  }, 1000);
 
   return (
     <>

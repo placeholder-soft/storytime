@@ -18,8 +18,14 @@ import { ZKLoginStore, insertSalt } from "../../components/zklogin.store";
 import { EVM } from "../../components/evm";
 import { useParams } from "react-router";
 import { Project } from "model";
-import { doc, onSnapshot, DocumentSnapshot } from "firebase/firestore";
-import { callFunction, db } from "../../firebase.ts";
+import {
+  doc,
+  onSnapshot,
+  DocumentSnapshot,
+  addDoc,
+  collection,
+} from "firebase/firestore";
+import { auth, callFunction, db } from "../../firebase.ts";
 
 const StyledInfoContainer = styled.div`
   display: flex;
@@ -149,6 +155,15 @@ const SuiMintButton = () => {
         "The Mysterious Map",
         "bb8018b7-4b6a-4841-a0ea-8e642b56a0ca",
       );
+
+      await addDoc(collection(db, "mints"), {
+        chain: "sui",
+        network: "devnet",
+        object_id: res.objectId,
+        sender: store.client.userAddress,
+        owner: store.client.userAddress,
+        uid: auth.currentUser?.uid,
+      });
 
       setUrl(`https://suiexplorer.com/object/${res.objectId}?network=devnet`);
     } catch (e) {

@@ -351,17 +351,18 @@ export const suiMint = async (
     },
   });
 
+  const object_id = (transactionBlock.events?.[0]?.parsedJson as any)
+    ?.object_id as string;
+
   await addDoc(collection(db, "mints"), {
     chain: "sui",
     network,
     digest: res.digest,
+    object_id: object_id,
     sender,
     owner: sender,
     uid: auth.currentUser?.uid,
   });
-
-  const object_id = (transactionBlock.events?.[0]?.parsedJson as any)
-    ?.object_id as string;
 
   return `https://suiexplorer.com/object/${object_id}?network=${network}`;
 };

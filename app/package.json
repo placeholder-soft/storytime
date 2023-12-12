@@ -25,6 +25,7 @@
     "fabric": "^5.3.0",
     "firebase": "^10.7.1",
     "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
     "model": "../model",
     "query-string": "^8.1.0",
     "react": "^18.2.0",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@types/fabric": "^5.3.6",
+    "@types/lodash": "^4.14.202",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
