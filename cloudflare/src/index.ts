@@ -7,6 +7,7 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
+import useReflare from 'reflare';
 
 export interface Env {
 	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
@@ -27,6 +28,16 @@ export interface Env {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		return new Response('Hello World!');
+		const reflare = await useReflare();
+
+		reflare.push({
+			path: '/story/*',
+			upstream: {
+				domain: 'serve-z5552u3cuq-de.a.run.app',
+				protocol: 'https',
+			},
+		});
+
+		return reflare.handle(request);
 	},
 };

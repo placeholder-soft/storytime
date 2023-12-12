@@ -23,6 +23,9 @@ dependencies:
   got-cjs:
     specifier: ^12.5.4
     version: 12.5.4
+  itty-router:
+    specifier: ^4.0.23
+    version: 4.0.23
   model:
     specifier: ../model
     version: link:../model
@@ -2520,6 +2523,10 @@ packages:
       html-escaper: 2.0.2
       istanbul-lib-report: 3.0.1
     dev: true
+
+  /itty-router@4.0.23:
+    resolution: {integrity: sha512-tP1NI8PVK43vWlBnIPqj47ni5FDSczFviA4wgBznscndo8lEvBA+pO3DD1rNbIQPcZhprr775iUTunyGvQMcBw==}
+    dev: false
 
   /jest-changed-files@29.7.0:
     resolution: {integrity: sha512-fEArFiwf1BpQ+4bXSprcDc3/x4HSzL4al2tozwVpDFpsxALjLYdyiIK4e5Vz66GQJIbXJ82+35PtysofptNX2w==}

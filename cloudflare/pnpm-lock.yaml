@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  reflare:
+    specifier: ^1.1.5
+    version: 1.1.5
+
 devDependencies:
   '@cloudflare/workers-types':
     specifier: ^4.20231121.0
@@ -575,6 +580,11 @@ packages:
     dependencies:
       picomatch: 2.3.1
     dev: true
+
+  /reflare@1.1.5:
+    resolution: {integrity: sha512-4bOLIFiZHQxH5I2+eJSfd7GhC6Qz96R+O/9XN9RDyzi5BBUQVDLCiWgUhMjeXj0Ofd+UZPqGFPEOmvSIofi0AQ==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+    dev: false
 
   /resolve.exports@2.0.2:
     resolution: {integrity: sha512-X2UW6Nw3n/aMgDVy+0rSqgHlv39WZAlZrXCdnbyEiKm17DSqHX4MmQMaST3FbeWR5FTuRcUwYAziZajji0Y7mg==}
