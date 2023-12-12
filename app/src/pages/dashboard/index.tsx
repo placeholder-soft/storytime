@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Project } from "model";
-import {
-  collection,
-  onSnapshot,
-  query,
-  QueryDocumentSnapshot,
-  where,
-} from "firebase/firestore";
+import { format } from "date-fns";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { protectedRoute } from "../../components/protectedRoute";
 import { db } from "../../firebase";
@@ -15,9 +12,13 @@ import {
   PageContainer,
 } from "../../components/Layout/Layout";
 import styled from "styled-components";
-import demoImage from "./_/demo.png";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Button } from "@radix-ui/themes";
+import {
+  createCharacterName,
+  createCharacterType,
+} from "../../modules/character/actions";
+import { loadStory } from "../../modules/story/actions";
 
 export const StyledContentContainer = styled(ContentContainer)`
   display: flex;
@@ -172,18 +173,42 @@ const StyledIndexTag = styled.div`
 `;
 
 const DashboardPage = protectedRoute(({ user }: { user: User }) => {
-  const [projects, setProjects] = useState<QueryDocumentSnapshot<Project>[]>();
+  const [projects, setProjects] = useState<Project[]>();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const myProjects = query(
       collection(db, "projects"),
       where("owner", "==", user.uid),
     );
     return onSnapshot(myProjects, (snapshot) => {
-      setProjects(
-        snapshot.docs.map((x) => x as QueryDocumentSnapshot<Project>),
-      );
+      setProjects(snapshot.docs.map((x) => x.data()) as Project[]);
     });
   }, [user.uid]);
+
+  const openBook = (value: Project) => {
+    const { character, rawPrompts, title, introduction, coverImage, scenes } =
+      value;
+    dispatch(createCharacterName({ characterName: character.name }));
+    dispatch(
+      createCharacterType({
+        characterType: character.type,
+        customCharacterType: character.customType,
+      }),
+    );
+    dispatch(
+      loadStory({
+        storyProgressPrompts: rawPrompts,
+        title,
+        introduction,
+        coverImage,
+        scenes,
+      }),
+    );
+    navigate("/story?read=true");
+  };
+
   if (projects == null) {
     return null;
   }
@@ -204,6 +229,7 @@ const DashboardPage = protectedRoute(({ user }: { user: User }) => {
       </PageContainer>
     );
   }
+
   return (
     <PageContainer>
       <StyledContentContainer>
@@ -214,29 +240,20 @@ const DashboardPage = protectedRoute(({ user }: { user: User }) => {
           </Link>
         </StyledTitleContainer>
         <StyledStoryContainer>
-          {[
-            {
-              name: "The Journey to Dragon’s Keep",
-              image: demoImage,
-            },
-            {
-              name: "The Journey to Dragon’s Keep",
-              image: demoImage,
-            },
-          ].map((story, idx) => (
-            <StyledStoryItem>
-              <StyledStoryImage src={story.image} alt="" />
+          {projects.map((story, idx) => (
+            <StyledStoryItem
+              onClick={() => {
+                openBook(story);
+              }}
+            >
+              <StyledStoryImage src={story.coverImage} alt="" />
               <div>
                 <StyledInfo>
-                  <StyledMintTag>Minted</StyledMintTag>
-                  <DateText>12/12/2023</DateText>
+                  {story.minted && <StyledMintTag>Minted</StyledMintTag>}
+                  <DateText>{format(story.createdAt, "yyy/MM/dd")}</DateText>
                 </StyledInfo>
                 <StyledStoryItemTitle>{story.name}</StyledStoryItemTitle>
-                <StyledDescription>
-                  A playful and bold collage of colors and shapes, blending a
-                  retro feel with modern design principles to evoke creativity
-                  and the joy of building something unique and impactful.
-                </StyledDescription>
+                <StyledDescription>{story.introduction}</StyledDescription>
                 <StyledLink>Read Story</StyledLink>
               </div>
               <StyledIndexTag>#{idx + 1}</StyledIndexTag>

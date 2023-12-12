@@ -35,6 +35,9 @@ dependencies:
   axios:
     specifier: ^1.6.2
     version: 1.6.2
+  date-fns:
+    specifier: ^2.30.0
+    version: 2.30.0
   dedent:
     specifier: ^1.5.1
     version: 1.5.1
@@ -4883,6 +4886,13 @@ packages:
       whatwg-url: 11.0.0
     dev: false
     optional: true
+
+  /date-fns@2.30.0:
+    resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
+    engines: {node: '>=0.11'}
+    dependencies:
+      '@babel/runtime': 7.23.5
+    dev: false
 
   /debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}

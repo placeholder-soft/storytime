@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
+// import { useSearchParams } from "react-router-dom";
 import { PageContainer } from "../../components/Layout/Layout";
 import storyImg from "./_/story.png";
 import styled from "styled-components";
@@ -65,6 +66,10 @@ const StyledCreateButtonContainer = styled.div`
 const MinStoryPage: FC = () => {
   const projectId = useParams().projectId!;
   const [project, setProject] = useState<DocumentSnapshot<Project>>();
+  // const [searchParams] = useSearchParams();
+
+  // const readMode = searchParams.get("read") === "true";
+
   useEffect(() => {
     return onSnapshot(doc(db, "projects", projectId), (doc) =>
       setProject(doc as any as DocumentSnapshot<Project>),
@@ -96,9 +101,20 @@ const MinStoryPage: FC = () => {
               </StyledDescription>
               <StyledCreateButtonContainer>
                 <SuiMintButton projectId={projectId} />
-                <EVM projectId={projectId}>
-                  <StyledCreateButton>Mint Story (Avax)</StyledCreateButton>
-                </EVM>
+                {project?.data()?.minted ? (
+                  <StyledCreateButton
+                    style={{
+                      color: "white",
+                      backgroundColor: "green",
+                    }}
+                  >
+                    Minted! (Avax)
+                  </StyledCreateButton>
+                ) : (
+                  <EVM projectId={projectId}>
+                    <StyledCreateButton>Mint Story (Avax)</StyledCreateButton>
+                  </EVM>
+                )}
               </StyledCreateButtonContainer>
             </StyledInfoContainer>
           </StyledStoryItem>

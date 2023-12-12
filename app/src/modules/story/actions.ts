@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { StoryProgress } from "../../types/story";
+import { StoryProgress, Scene } from "../../types/story";
 
 // Action Types
 export const TO_SCENE = "Story/TO_SCENE";
@@ -7,6 +7,8 @@ export const INIT_STORY = "Story/INIT_STORY";
 export const INIT_STORY_SUCCESS = "Story/INIT_STORY_SUCCESS";
 export const UPDATE_STORY = "Story/UPDATE_STORY";
 export const UPDATE_STORY_SUCCESS = "Story/UPDATE_STORY_SUCCESS";
+export const LOAD_STORY = "Story/LOAD_STORY";
+export const LOAD_STORY_SUCCESS = "Story/LOAD_STORY_SUCCESS";
 
 // Action Creators
 type ToSceneBody = { index: number };
@@ -49,6 +51,19 @@ export type UpdateStorySuccessAction = Action & {
 };
 export const updateStorySuccess = (data: UpdateStorySuccessBody) => ({
   type: UPDATE_STORY_SUCCESS,
+  data,
+});
+
+type LoadStoryBody = {
+  storyProgressPrompts: StoryProgress[];
+  title: string;
+  introduction: string;
+  coverImage: string;
+  scenes: Scene[];
+};
+export type LoadStoryAction = Action & { data: LoadStoryBody };
+export const loadStory = (data: LoadStoryBody): LoadStoryAction => ({
+  type: LOAD_STORY,
   data,
 });
 

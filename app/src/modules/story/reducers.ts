@@ -6,6 +6,7 @@ import {
   INIT_STORY_SUCCESS,
   UPDATE_STORY,
   UPDATE_STORY_SUCCESS,
+  LOAD_STORY,
 } from "./actions";
 import { parseStoryGuideline } from "./utils";
 import { STORY_MOCK } from "../../mock";
@@ -77,6 +78,19 @@ const storyReducer = (state = initialState, action: StoryAction) => {
         ...state,
         scenes: [...state.scenes, { ...scene, sceneImage }],
         storyProgressPrompts: [...state.storyProgressPrompts, progress],
+      };
+    }
+    case LOAD_STORY: {
+      // when users fires their prompt to open AI, add the user role prompt into prompt list
+      const { storyProgressPrompts, title, introduction, coverImage, scenes } =
+        action.data;
+      return {
+        ...state,
+        storyProgressPrompts,
+        title,
+        introduction,
+        coverImage,
+        scenes,
       };
     }
     default:

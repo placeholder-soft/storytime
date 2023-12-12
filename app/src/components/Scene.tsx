@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import {
   currentSceneSelector,
@@ -145,6 +145,7 @@ const Scene = () => {
   } = useSelector(currentSceneSelector);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (sceneNumber) {
@@ -180,12 +181,16 @@ const Scene = () => {
   }, [descriptions, sceneDescription]);
 
   const onOptionClick = (val: string) => {
-    dispatch(
-      updateStory({
-        message: { role: StoryProgressPromptRole.User, content: val },
-      }),
-    );
-    setLoading(true);
+    if (searchParams.get("read") === "true") {
+      dispatch(toScene({ index: sceneNumber + 1 }));
+    } else {
+      dispatch(
+        updateStory({
+          message: { role: StoryProgressPromptRole.User, content: val },
+        }),
+      );
+      setLoading(true);
+    }
   };
 
   const onStoryEnd = async () => {
@@ -199,7 +204,7 @@ const Scene = () => {
       name: wholeStory.title,
       createdAt: new Date().getTime(),
       minted: false,
-      title: "My Story",
+      title: wholeStory.title,
       introduction: wholeStory.introduction,
       coverImage: wholeStory.coverImage,
       rawPrompts: wholeStory.storyProgressPrompts,
@@ -211,7 +216,11 @@ const Scene = () => {
       convertUndefinedToNull(project),
     );
     // go to mint page
-    navigate("/mint?projectId=" + newProject.id);
+    const to =
+      searchParams.get("read") === "true"
+        ? `/mint/${newProject.id}?read=true`
+        : `/mint/${newProject.id}`;
+    navigate(to);
   };
 
   if (loading) {
