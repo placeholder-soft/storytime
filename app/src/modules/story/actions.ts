@@ -2,12 +2,20 @@ import { Action } from "redux";
 import { StoryProgress } from "../../types/story";
 
 // Action Types
+export const TO_SCENE = "Story/TO_SCENE";
 export const INIT_STORY = "Story/INIT_STORY";
 export const INIT_STORY_SUCCESS = "Story/INIT_STORY_SUCCESS";
 export const UPDATE_STORY = "Story/UPDATE_STORY";
 export const UPDATE_STORY_SUCCESS = "Story/UPDATE_STORY_SUCCESS";
 
 // Action Creators
+type ToSceneBody = { index: number };
+export type ToSceneAction = Action & { data: ToSceneBody };
+export const toScene = (data: ToSceneBody): ToSceneAction => ({
+  type: TO_SCENE,
+  data,
+});
+
 type InitStoryBody = { initMessage: StoryProgress };
 export type InitStoryAction = Action & { data: InitStoryBody };
 export const initStory = (data: InitStoryBody): InitStoryAction => ({
@@ -24,10 +32,10 @@ export const initStorySuccess = (data: InitStorySuccessBody) => ({
   data,
 });
 
-type UpdateStoryBody = { initMessage: StoryProgress };
+type UpdateStoryBody = { message: StoryProgress };
 export type UpdateStoryAction = Action & { data: UpdateStoryBody };
-export const UpdateStory = (data: UpdateStoryBody): UpdateStoryAction => ({
-  type: INIT_STORY,
+export const updateStory = (data: UpdateStoryBody): UpdateStoryAction => ({
+  type: UPDATE_STORY,
   data,
 });
 
@@ -41,6 +49,7 @@ export const updateStorySuccess = (data: InitStorySuccessBody) => ({
 });
 
 export type StoryAction =
+  | ToSceneAction
   | InitStoryAction
   | InitStorySuccessAction
   | UpdateStoryAction
