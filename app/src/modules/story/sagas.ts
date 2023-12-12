@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { all } from "axios";
 import { call, put, select, takeEvery } from "redux-saga/effects";
 import { StoryProgress } from "../../types/story";
 import {
@@ -44,27 +44,28 @@ function* initStory(action: InitStoryAction) {
     const { character, setting, introduction, scene } = parseStoryGuideline(
       progress.content,
     );
-    // TODO use cover prompt
-    const { image_url: coverImage } = (yield call(
-      callFunction,
-      "generateImage",
-      makeImagePrompt({
-        character,
-        setting,
-        introduction,
-        currentScene: scene,
-      }),
-    )) as { image_url: string; revised_prompt: string };
-    const { image_url: scene1Image } = (yield call(
-      callFunction,
-      "generateImage",
-      makeImagePrompt({
-        character,
-        setting,
-        introduction,
-        currentScene: scene,
-      }),
-    )) as { image_url: string; revised_prompt: string };
+    const [{ image_url: coverImage }, { image_url: scene1Image }] = yield all([
+      (yield call(
+        callFunction,
+        "generateImage",
+        makeImagePrompt({
+          character,
+          setting,
+          introduction,
+          currentScene: scene,
+        }),
+      )) as { image_url: string; revised_prompt: string },
+      (yield call(
+        callFunction,
+        "generateImage",
+        makeImagePrompt({
+          character,
+          setting,
+          introduction,
+          currentScene: scene,
+        }),
+      )) as { image_url: string; revised_prompt: string },
+    ]);
     yield put(
       initStorySuccess({
         progress,
