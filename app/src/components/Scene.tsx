@@ -115,6 +115,19 @@ const Para = styled.p`
   margin: 4px;
 `;
 
+function convertUndefinedToNull(obj: any, parentKeyPath: string = ""): any {
+  Object.keys(obj).forEach((key) => {
+    const keyPath = `${parentKeyPath}${parentKeyPath ? "." : ""}${key}`;
+    if (obj[key] === undefined) {
+      console.log(`Converting undefined to null at path: ${keyPath}`);
+      obj[key] = null;
+    } else if (obj[key] !== null && typeof obj[key] === "object") {
+      convertUndefinedToNull(obj[key], keyPath);
+    }
+  });
+  return obj;
+}
+
 const Scene = () => {
   const [step, setStep] = useState(0); // note: 0 is description, 1 is options
   const [descriptions, setDescriptions] = useState<string[]>([]); // html description
@@ -192,7 +205,11 @@ const Scene = () => {
       rawPrompts: wholeStory.storyProgressPrompts,
       scenes: wholeStory.scenes,
     };
-    const newProject = await addDoc(collection(db, "projects"), project);
+    console.log(project);
+    const newProject = await addDoc(
+      collection(db, "projects"),
+      convertUndefinedToNull(project),
+    );
     // go to mint page
     navigate("/mint?projectId=" + newProject.id);
   };

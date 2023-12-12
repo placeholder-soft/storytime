@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { toScene } from "../modules/story/actions";
 import { storySelector } from "../modules/story/selectors";
 
@@ -24,6 +24,69 @@ const Heading = styled.h1`
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for better readability */
 `;
 
+const Loader = styled.div`
+  font-size: 2rem;
+  color: white; /* White text color */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for better readability */
+`;
+
+const Dot1Animation = keyframes`
+  0%{
+    opacity: 0;
+  }
+  15%{
+    opacity: 0;
+  }
+  25%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 1;
+  }
+`;
+const Dot1 = styled.span`
+  opacity: 0;
+  animation: ${Dot1Animation} 2s infinite linear;
+`;
+
+const Dot2Animation = keyframes`
+  0%{
+    opacity: 0;
+  }
+  25%{
+    opacity: 0;
+  }
+  50%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 1;
+  }
+`;
+const Dot2 = styled.span`
+  opacity: 0;
+  animation: ${Dot2Animation} 2s infinite linear;
+`;
+
+const Dot3Animation = keyframes`
+  0%{
+    opacity: 0;
+  }
+  50%{
+    opacity: 0;
+  }
+  75%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 1;
+  }
+`;
+const Dot3 = styled.span`
+  opacity: 0;
+  animation: ${Dot3Animation} 2s infinite linear;
+`;
+
 const Cover = () => {
   const { title, coverImage, currentSceneIndex } = useSelector(storySelector);
   const dispatch = useDispatch();
@@ -35,7 +98,15 @@ const Cover = () => {
 
   return (
     <BackgroundImageContainer backgroundImageUrl={coverImage} onClick={next}>
-      <Heading>{title}</Heading>
+      {title && <Heading>{title}</Heading>}
+      {!title && (
+        <Loader>
+          Generating a Good book
+          <Dot1>.</Dot1>
+          <Dot2>.</Dot2>
+          <Dot3>.</Dot3>
+        </Loader>
+      )}
     </BackgroundImageContainer>
   );
 };
