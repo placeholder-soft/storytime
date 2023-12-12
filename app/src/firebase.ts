@@ -23,7 +23,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export const functions = getFunctions(app);
+export const functions = getFunctions(app, 'asia-east1');
 
 export async function callFunction<Name extends keyof CloudFunctionsType>(
   name: Name,
