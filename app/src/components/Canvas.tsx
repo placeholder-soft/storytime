@@ -67,7 +67,7 @@ const SketchCanvas: FC<SketchCanvas> = ({ onUpdate }) => {
 
     // Configure drawing brush
     fabricCanvasRef.current.freeDrawingBrush.color = "black";
-    fabricCanvasRef.current.freeDrawingBrush.width = 5;
+    fabricCanvasRef.current.freeDrawingBrush.width = 10;
 
     fabricCanvasRef.current.on("mouse:up", () => {
       fabricCanvasRef.current?.renderAll();
@@ -94,7 +94,7 @@ const SketchCanvas: FC<SketchCanvas> = ({ onUpdate }) => {
           onClick={() => {
             if (fabricCanvasRef.current) {
               fabricCanvasRef.current.freeDrawingBrush.color = "black";
-              fabricCanvasRef.current.freeDrawingBrush.width = 5;
+              fabricCanvasRef.current.freeDrawingBrush.width = 10;
             }
             setMode("draw");
           }}
@@ -106,7 +106,7 @@ const SketchCanvas: FC<SketchCanvas> = ({ onUpdate }) => {
           onClick={() => {
             if (fabricCanvasRef.current) {
               fabricCanvasRef.current.freeDrawingBrush.color = "white";
-              fabricCanvasRef.current.freeDrawingBrush.width = 10;
+              fabricCanvasRef.current.freeDrawingBrush.width = 40;
             }
             setMode("erase");
           }}
