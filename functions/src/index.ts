@@ -7,13 +7,16 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {HttpsError, onCall} from "firebase-functions/v2/https";
+import {HttpsError, onCall, onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import {generateImage} from './generateImage'
+import { generateImage } from "./generateImage";
 import admin from "firebase-admin";
 
 import adminKey from "./credentials/admin-key.json";
-import {CloudFunctionsTypeWithUid} from "./handlersType";
+import { CloudFunctionsTypeWithUid } from "./handlersType";
+import { getStory } from "./getStory";
+
+export * from './serve'
 
 admin.initializeApp({
   credential: admin.credential.cert(adminKey as any),
@@ -23,17 +26,22 @@ admin.initializeApp({
 // https://firebase.google.com/docs/functions/typescript
 const handlers: CloudFunctionsTypeWithUid = {
   generateImage,
+  getStory,
 };
 
-export const execute = onCall({region: "asia-east1", memory: "8GiB", invoker: "public"}, async ({data, auth}) => {
-  const uid = auth?.uid;
-  logger.info(data, {context: uid});
-  if (!(data.type in handlers)) {
-    throw new HttpsError(
-      "invalid-argument",
-      `Function ${data.type} does not exist`,
-    );
+export const execute = onCall(
+  { region: "asia-east1", memory: "8GiB", invoker: "public" },
+  async ({ data, auth }) => {
+    const uid = auth?.uid;
+    logger.info(data, { context: uid });
+    if (!(data.type in handlers)) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Function ${data.type} does not exist`
+      );
+    }
+    return await (handlers as any)[data.type](...data.args, uid);
   }
-  return await (handlers as any)[data.type](...data.args, uid);
-});
+);
+
 

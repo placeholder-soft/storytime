@@ -1,3 +1,4 @@
+import dedent from 'dedent'
 export const getStoryTemplate = ({
   characterType,
   characterName,
@@ -5,8 +6,7 @@ export const getStoryTemplate = ({
   characterType: string;
   characterName: string;
 }) =>
-  encodeURI(
-    `Respond with JSON format, don't output any other content except the JSON, don't wrap the JSON with markdown syntax
+  dedent`Respond with JSON format, don't output any other content except the JSON, don't wrap the JSON with markdown syntax
 
 Create a choose-your-own adventure game that lasts 6 scenes where each scene's choice will lead to the next scene. Each scene having 3 choices for the user to choose from that is both fun and engaging. Ensure the the character aesthetic is well defined with tons of description and the setting has the scenery very detailed. Response one scene at a time.
 
@@ -85,5 +85,5 @@ Example 3:
 
 Ensure that after each scene the user has to type their input. As a user, I can play the game here by responding with a choice. 
 
-The Character is a ${characterType} named ${characterName} for this new story`.trim()
-  );
+The Character is a ${characterType} named ${characterName} for this new story`
+;

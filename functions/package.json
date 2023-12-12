@@ -20,6 +20,7 @@
     "firebase-admin": "^11.11.1",
     "firebase-functions": "^4.3.1",
     "got-cjs": "^12.5.4",
+    "itty-router": "^4.0.23",
     "model": "../model",
     "nanoid": "3",
     "openai": "^4.20.1"

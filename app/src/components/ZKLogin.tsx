@@ -18,7 +18,7 @@ function getTransactionBlock(sender: string): TransactionBlock {
     arguments: [
       txb.pure("image 2"),
       txb.pure(
-        "premium_photo-1669324357471-e33e71e3f3d8?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        "premium_photo-1669324357471-e33e71e3f3d8?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       ),
     ],
   });
@@ -31,7 +31,7 @@ export const ZKLogin = () => {
   const navigate = useNavigate();
 
   const [address, setAddress] = useState<string>(
-    "0xedecedb35529bcbfb7edd620634b748d15e3af0c9734dd520b3d275017213b96"
+    "0xedecedb35529bcbfb7edd620634b748d15e3af0c9734dd520b3d275017213b96",
   );
 
   const [digest, setDigest] = useState<string>("");
@@ -66,7 +66,7 @@ export const ZKLogin = () => {
     {
       enabled: store.client ? Boolean(store.client.userAddress) : false,
       refetchInterval: 1500,
-    }
+    },
   );
 
   if (store == null) {
@@ -94,7 +94,7 @@ export const ZKLogin = () => {
                 BigInt(addressBalance.totalBalance),
                 MIST_PER_SUI.toString().length - 1,
               ],
-              6
+              6,
             )
           : "0.000000"}{" "}
         SUI
@@ -106,7 +106,7 @@ export const ZKLogin = () => {
         {store.client == null && (
           <button
             onClick={() => {
-              store.signInWithGoogle();
+              void store.signInWithGoogle(window.location.href);
             }}
           >
             Login with ZKLogin

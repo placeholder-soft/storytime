@@ -23,7 +23,11 @@ export const initStory = (data: InitStoryBody): InitStoryAction => ({
   data,
 });
 
-type InitStorySuccessBody = { progress: StoryProgress };
+type InitStorySuccessBody = {
+  progress: StoryProgress;
+  coverImage: string;
+  sceneImage: string; // note: for scene1
+};
 export type InitStorySuccessAction = Action & {
   data: InitStorySuccessBody;
 };
@@ -39,11 +43,11 @@ export const updateStory = (data: UpdateStoryBody): UpdateStoryAction => ({
   data,
 });
 
-type UpdateStorySuccessBody = { progress: StoryProgress };
+type UpdateStorySuccessBody = { progress: StoryProgress; sceneImage: string };
 export type UpdateStorySuccessAction = Action & {
   data: UpdateStorySuccessBody;
 };
-export const updateStorySuccess = (data: InitStorySuccessBody) => ({
+export const updateStorySuccess = (data: UpdateStorySuccessBody) => ({
   type: UPDATE_STORY_SUCCESS,
   data,
 });

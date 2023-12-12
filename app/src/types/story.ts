@@ -29,6 +29,7 @@ export type Scene = {
   setting: string;
   sceneNumber: number;
   sceneTitle: string;
+  sceneImage: string;
   sceneDescription: string;
   optionPrompt: string;
   options: string[];

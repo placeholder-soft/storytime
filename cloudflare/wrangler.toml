@@ -2,6 +2,10 @@ name = "storytime"
 main = "src/index.ts"
 compatibility_date = "2023-12-06"
 
+routes = [
+	{ pattern = "data.storytime.one", custom_domain = true }
+]
+
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
