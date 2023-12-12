@@ -150,8 +150,6 @@ class ZKLoginClient {
   ) {
     this.jwtPayload = jwtDecode(id_token);
 
-    console.log(this.jwtPayload);
-
     this.initailize();
   }
 
