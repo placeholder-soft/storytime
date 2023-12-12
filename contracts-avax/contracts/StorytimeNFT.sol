@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract StoryTimeNFT is ERC721, ERC721Enumerable, Ownable {
+contract StorytimeNFT is ERC721, ERC721Enumerable, Ownable {
     uint256 private _nextTokenId;
 
     constructor(
@@ -13,10 +13,15 @@ contract StoryTimeNFT is ERC721, ERC721Enumerable, Ownable {
     ) ERC721("StoryTimeNFT", "ST") Ownable(initialOwner) {}
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://avax.storytime.one";
+        return "https://avax.storytime.one/";
     }
 
     function safeMint(address to) public onlyOwner {
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(to, tokenId);
+    }
+
+    function mint(address to) public {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
     }
