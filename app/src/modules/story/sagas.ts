@@ -10,6 +10,8 @@ import {
   toScene,
 } from "./actions";
 import { storyProgressSelector, storySelector } from "./selectors";
+import { parseScene, parseStoryGuideline } from "./utils";
+import { callFunction } from "../../firebase.ts";
 
 // Sample worker saga
 function* initStory(action: InitStoryAction) {
@@ -31,10 +33,27 @@ function* initStory(action: InitStoryAction) {
         headers: {
           Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_SECRET}`,
         },
-      }
+      },
     );
     const progress = data.choices?.[0].message as StoryProgress;
-    yield put(initStorySuccess({ progress }));
+    const { introduction, scene } = parseStoryGuideline(progress.content);
+    const { image_url } = (yield call(
+      callFunction,
+      "generateImage",
+      introduction,
+    )) as { image_url: string; revised_prompt: string };
+    const { image_url: scene1Image } = (yield call(
+      callFunction,
+      "generateImage",
+      scene.sceneDescription,
+    )) as { image_url: string; revised_prompt: string };
+    yield put(
+      initStorySuccess({
+        progress,
+        coverImage: image_url,
+        sceneImage: scene1Image,
+      }),
+    );
   } catch (e) {
     console.error(e);
   }
@@ -44,7 +63,7 @@ function* updateStory(action: InitStoryAction) {
   const { message } = action.data;
   const { currentSceneIndex } = yield select(storySelector);
   const storyProgress = (yield select(
-    storyProgressSelector
+    storyProgressSelector,
   )) as StoryProgress[];
   const payload = {
     model: "gpt-4-1106-preview",
@@ -62,10 +81,16 @@ function* updateStory(action: InitStoryAction) {
         headers: {
           Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_SECRET}`,
         },
-      }
+      },
     );
     const progress = data.choices?.[0].message as StoryProgress;
-    yield put(updateStorySuccess({ progress }));
+    const { sceneDescription } = parseScene(progress.content);
+    const { image_url } = (yield call(
+      callFunction,
+      "generateImage",
+      sceneDescription,
+    )) as { image_url: string; revised_prompt: string };
+    yield put(updateStorySuccess({ progress, sceneImage: image_url }));
   } catch (e) {
     console.error(e);
   } finally {

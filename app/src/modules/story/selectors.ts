@@ -7,20 +7,21 @@ const getStoryBase = (state: RootState) => state.story;
 
 export const storySelector = createSelector(
   [getStoryBase],
-  ({ title, introduction, currentSceneIndex }) => ({
+  ({ title, introduction, coverImage, currentSceneIndex }) => ({
     title,
     introduction,
+    coverImage,
     currentSceneIndex,
-  })
+  }),
 );
 
 export const currentSceneSelector = createSelector(
   [getStoryBase],
   ({ scenes, currentSceneIndex }) =>
-    currentSceneIndex > 0 ? scenes[currentSceneIndex - 1] : ({} as Scene)
+    currentSceneIndex > 0 ? scenes[currentSceneIndex - 1] : ({} as Scene),
 );
 
 export const storyProgressSelector = createSelector(
   [getStoryBase],
-  ({ storyProgressPrompts }) => storyProgressPrompts
+  ({ storyProgressPrompts }) => storyProgressPrompts,
 );

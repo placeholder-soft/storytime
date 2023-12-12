@@ -29,7 +29,8 @@ export type Project = {
   createdAt: number;
   minted: boolean;
   title: string;
-  image: string;
+  introduction: string;
+  coverImage: string;
   rawPrompts: RawPrompt[];
 };
 
