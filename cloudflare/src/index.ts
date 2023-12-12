@@ -31,7 +31,7 @@ export default {
 		const reflare = await useReflare();
 
 		reflare.push({
-			path: '/story/*',
+			path: '/*',
 			upstream: {
 				domain: 'serve-z5552u3cuq-de.a.run.app',
 				protocol: 'https',
