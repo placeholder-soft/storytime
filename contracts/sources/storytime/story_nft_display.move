@@ -31,7 +31,7 @@ module storytime::story_nft_display {
     }
 
     // ====
-        /// One-Time-Witness for the module.
+    /// One-Time-Witness for the module.
     struct STORY_NFT_DISPLAY has drop {}
 
     /// In the module initializer one claims the `Publisher` object

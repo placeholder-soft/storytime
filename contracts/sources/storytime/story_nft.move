@@ -83,14 +83,54 @@ module storytime::story_nft {
     public fun update_description(
         nft: &mut StoryNFT,
         new_description: vector<u8>,
-        _: &mut TxContext
     ) {
         nft.description = string::utf8(new_description)
     }
 
     /// Permanently delete `nft`
-    public fun burn(nft: StoryNFT, _: &mut TxContext) {
+    public fun burn(nft: StoryNFT) {
         let StoryNFT { id, name: _, description: _, url: _ } = nft;
         object::delete(id)
+    }
+}
+
+
+#[test_only]
+module storytime::story_nft_tests {
+    use storytime::story_nft::{Self, StoryNFT};
+    use sui::test_scenario as ts;
+    use sui::transfer;
+    use std::string;
+
+    #[test]
+    fun mint_transfer_update() {
+        let addr1 = @0xA;
+        let addr2 = @0xB;
+        // create the NFT
+        let scenario = ts::begin(addr1);
+        {
+            story_nft::mint(b"test", b"a test", b"https://www.sui.io", ts::ctx(&mut scenario))
+        };
+        // send it from A to B
+        ts::next_tx(&mut scenario, addr1);
+        {
+            let nft = ts::take_from_sender<StoryNFT>(&scenario);
+            transfer::public_transfer(nft, addr2);
+        };
+        // update its description
+        ts::next_tx(&mut scenario, addr2);
+        {
+            let nft = ts::take_from_sender<StoryNFT>(&scenario);
+            story_nft::update_description(&mut nft, b"a new description") ;
+            assert!(*string::bytes(story_nft::description(&nft)) == b"a new description", 0);
+            ts::return_to_sender(&scenario, nft);
+        };
+        // burn it
+        ts::next_tx(&mut scenario, addr2);
+        {
+            let nft = ts::take_from_sender<StoryNFT>(&scenario);
+            story_nft::burn(nft)
+        };
+        ts::end(scenario);
     }
 }
