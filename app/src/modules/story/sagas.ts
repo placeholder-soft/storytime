@@ -37,19 +37,22 @@ function* initStory(action: InitStoryAction) {
     );
     const progress = data.choices?.[0].message as StoryProgress;
     const { introduction, scene } = parseStoryGuideline(progress.content);
-    const coverImage = (yield call(
+    const { image_url } = (yield call(
       callFunction,
       "generateImage",
       introduction,
-    )) as string;
-    console.log(coverImage);
-    const scene1Image = (yield call(
+    )) as { image_url: string; revised_prompt: string };
+    const { image_url: scene1Image } = (yield call(
       callFunction,
       "generateImage",
       scene.sceneDescription,
-    )) as string;
+    )) as { image_url: string; revised_prompt: string };
     yield put(
-      initStorySuccess({ progress, coverImage, sceneImage: scene1Image }),
+      initStorySuccess({
+        progress,
+        coverImage: image_url,
+        sceneImage: scene1Image,
+      }),
     );
   } catch (e) {
     console.error(e);
@@ -82,12 +85,12 @@ function* updateStory(action: InitStoryAction) {
     );
     const progress = data.choices?.[0].message as StoryProgress;
     const { sceneDescription } = parseScene(progress.content);
-    const sceneImage = (yield call(
+    const { image_url } = (yield call(
       callFunction,
       "generateImage",
       sceneDescription,
-    )) as string;
-    yield put(updateStorySuccess({ progress, sceneImage }));
+    )) as { image_url: string; revised_prompt: string };
+    yield put(updateStorySuccess({ progress, sceneImage: image_url }));
   } catch (e) {
     console.error(e);
   } finally {

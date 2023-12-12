@@ -44,7 +44,8 @@ export const parseStoryGuideline = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cont: any = {};
   try {
-    cont = JSON.parse(content) as RawScene;
+    const markdownStripped = stripMarkdown(content);
+    cont = JSON.parse(markdownStripped) as RawScene;
   } catch (e) {
     console.log(e);
   }
