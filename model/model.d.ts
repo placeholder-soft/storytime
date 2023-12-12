@@ -24,6 +24,7 @@ export type RawPrompt = {
 
 // note: Project = Story from FE
 export type Project = {
+  owner: string;
   character: Character;
   name: string;
   createdAt: number;

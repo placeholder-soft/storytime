@@ -6,6 +6,9 @@ import { currentSceneSelector } from "../modules/story/selectors";
 import { updateStory, toScene } from "../modules/story/actions";
 import { StoryProgressPromptRole } from "../types/story";
 import Loader from "../components/Loader";
+import { Project } from "model";
+import { auth, db } from "../firebase.ts";
+import { addDoc, collection } from "firebase/firestore";
 
 const BackgroundImageContainer = styled.div<{ backgroundImageUrl: string }>`
   background-image: url(${(props) => props.backgroundImageUrl});
@@ -154,10 +157,24 @@ const Scene = () => {
     setLoading(true);
   };
 
-  const onStoryEnd = () => {
+  const onStoryEnd = async () => {
     // TODO: upload book to firebase
+    const project: Project = {
+      owner: auth.currentUser!.uid,
+      name: "My Story",
+      title: "My Story",
+      character: {
+        type: "human",
+      },
+      coverImage: "https://app.storytime.one/assets/poster-FQgx4hzK.png",
+      createdAt: new Date().getTime(),
+      minted: false,
+      introduction: "This is my story",
+      rawPrompts: [],
+    };
+    const newProject = await addDoc(collection(db, "projects"), project);
     // go to mint page
-    navigate("/mint");
+    navigate("/mint?projectId=" + newProject.id);
   };
 
   if (loading) {

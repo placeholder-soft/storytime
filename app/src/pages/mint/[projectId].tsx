@@ -20,6 +20,10 @@ import {
   insertSalt,
 } from "../../components/zklogin.store";
 import { EVM } from "../../components/evm";
+import { useParams } from "react-router";
+import { Project } from "model";
+import { doc, onSnapshot, DocumentSnapshot } from "firebase/firestore";
+import { db } from "../../firebase.ts";
 
 const StyledInfoContainer = styled.div`
   display: flex;
@@ -57,6 +61,13 @@ const StyledCreateButtonContainer = styled.div`
 `;
 
 const MinStoryPage: FC = () => {
+  const projectId = useParams().projectId!;
+  const [project, setProject] = useState<DocumentSnapshot<Project>>();
+  useEffect(() => {
+    return onSnapshot(doc(db, "projects", projectId), (doc) =>
+      setProject(doc as any as DocumentSnapshot<Project>),
+    );
+  }, [projectId]);
   return (
     <PageContainer>
       <StyledContentContainer>
@@ -65,15 +76,21 @@ const MinStoryPage: FC = () => {
         </StyledTitleContainer>
         <StyledStoryContainer>
           <StyledStoryItem>
-            <StyledStoryImage src={storyImg} alt="" />
+            <StyledStoryImage
+              src={project?.data()?.coverImage ?? storyImg}
+              alt=""
+            />
             <StyledInfoContainer>
               <StyledStoryItemTitle>
-                The Journey to Dragon’s Keep
+                {project?.data()?.title ?? "The Journey to Dragon’s Keep"}
               </StyledStoryItemTitle>
               <StyledDescription>
+                {project?.data()?.introduction ??
+                  `
                 A playful and bold collage of colors and shapes, blending a
                 retro feel with modern design principles to evoke creativity and
                 the joy of building something unique and impactful.
+                `}
               </StyledDescription>
               <StyledCreateButtonContainer>
                 <SuiMintButton />

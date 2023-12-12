@@ -3,7 +3,9 @@ import { Project } from "model";
 import {
   collection,
   onSnapshot,
+  query,
   QueryDocumentSnapshot,
+  where,
 } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { protectedRoute } from "../../components/protectedRoute";
@@ -172,7 +174,11 @@ const StyledIndexTag = styled.div`
 const DashboardPage = protectedRoute(({ user }: { user: User }) => {
   const [projects, setProjects] = useState<QueryDocumentSnapshot<Project>[]>();
   useEffect(() => {
-    onSnapshot(collection(db, `users/${user.uid}/projects`), (snapshot) => {
+    const myProjects = query(
+      collection(db, "projects"),
+      where("owner", "==", user.uid),
+    );
+    return onSnapshot(myProjects, (snapshot) => {
       setProjects(
         snapshot.docs.map((x) => x as QueryDocumentSnapshot<Project>),
       );
