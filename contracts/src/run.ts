@@ -28,24 +28,6 @@ async function main() {
     ],
   });
 
-  // const [coin] = txb.splitCoins(txb.gas, [100]);
-
-  // transfer the split coin to a specific address
-  // txb.transferObjects([coin], '0x380254779600ed29cb70c917255b084d12b5a760c4dadeceb8f7673d0fc99d1d');
-
-  // const bytes = await txb.build();
-  // const serializedSignature = (await keypair.signTransactionBlock(bytes))
-  //   .signature;
-
-  // // verify the signature locally
-  // const verified = await keypair
-  //   .getPublicKey()
-  //   .verifyTransactionBlock(bytes, serializedSignature)
-
-  // if (!verified) {
-  //   throw new Error('Signature verification failed');
-  // }
-
   // define sui client for the desired network.
   const client = new SuiClient({ url: getFullnodeUrl('devnet') });
   const result = await client.signAndExecuteTransactionBlock({

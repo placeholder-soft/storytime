@@ -79,7 +79,7 @@ module storytime::story_nft {
     }
 
     // ===== Entrypoints =====
-
+    #[lint_allow(self_transfer)]
     public fun mint(name: String, image_url: String, ctx: &mut TxContext) {
         let sender = tx_context::sender(ctx);
         let id = object::new(ctx);
@@ -99,6 +99,26 @@ module storytime::story_nft {
         });
 
         transfer::public_transfer(nft, sender);
+    }
+
+    public fun mint_to(to: address, name: String, image_url: String, ctx: &mut TxContext) {
+        let id = object::new(ctx);
+        let chapters = vector[];
+        let nft = StoryNFT { 
+            id, 
+            name, 
+            image_url, 
+            chapters, 
+            auther: to
+        };
+
+        event::emit(NFTMinted {
+            object_id: object::id(&nft),
+            creator: to,
+            name: nft.name,
+        });
+
+        transfer::public_transfer(nft, to);
     }
 
     /// Transfer `nft` to `recipient`

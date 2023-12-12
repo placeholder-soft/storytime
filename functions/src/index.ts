@@ -15,6 +15,7 @@ import admin from "firebase-admin";
 import adminKey from "./credentials/admin-key.json";
 import { CloudFunctionsTypeWithUid } from "./handlersType";
 import { getStory } from "./getStory";
+import { gaslessMint } from "./gaslessMint";
 
 export * from "./serve";
 
@@ -27,6 +28,7 @@ admin.initializeApp({
 const handlers: CloudFunctionsTypeWithUid = {
   generateImage,
   getStory,
+  gaslessMint,
 };
 
 export const execute = onCall(
