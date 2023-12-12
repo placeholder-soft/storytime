@@ -28,7 +28,9 @@ export function WalletStatus() {
       <h1>zklogin</h1>
       <ZKLogin />
       <h1>EVM</h1>
-      <EVM />
+      <EVM>
+        <button>mint</button>
+      </EVM>
       <h1>Query</h1>
       <Query />
     </Container>
