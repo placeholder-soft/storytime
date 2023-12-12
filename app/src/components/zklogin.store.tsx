@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
 import { SerializedSignature } from "@mysten/sui.js/cryptography";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
@@ -12,17 +13,20 @@ import {
 } from "@mysten/zklogin";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { auth, db } from "../firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
+
+const network = "devnet";
 
 const CLIENT_ID =
   "78105453039-rc9sdmkol2dej5u365dfgq6bjeopmu0f.apps.googleusercontent.com";
 
-export const SUI_DEVNET_FAUCET = "https://faucet.devnet.sui.io/gas";
+export const SUI_DEVNET_FAUCET = `https://faucet.${network}.sui.io/gas`;
 
 export const PROVER_URL = "https://prover-dev.mystenlabs.com/v1";
 
-export const client = new SuiClient({ url: getFullnodeUrl("devnet") });
+export const client = new SuiClient({ url: getFullnodeUrl(network) });
 
 export type PartialZkLoginSignature = Omit<
   Parameters<typeof getZkLoginSignature>["0"]["inputs"],
@@ -44,13 +48,13 @@ export class ZKLoginStore {
 
   client?: ZKLoginClient;
 
-  constructor(readonly info?: { salt: string; id_token: string }) {
+  constructor() {
     void this.initialize();
   }
 
   resetStorage() {
-    window.sessionStorage.removeItem("ephemeralKeyPair");
-    window.sessionStorage.removeItem("randomness");
+    window.localStorage.removeItem("ephemeralKeyPair");
+    window.localStorage.removeItem("randomness");
   }
 
   private async initialize() {
@@ -58,11 +62,15 @@ export class ZKLoginStore {
     await this.getEpoch();
     this.genNone();
 
-    if (this.info != null) {
-      this.client = new ZKLoginClient(this, this.info.salt, this.info.id_token);
+    this.initialized = true;
+  }
+
+  initializeClient(info: { salt: string; id_token: string }) {
+    if (info == null) {
+      throw new Error("info is not defined");
     }
 
-    this.initialized = true;
+    this.client = new ZKLoginClient(this, info.salt, info.id_token);
   }
 
   private get publicKey() {
@@ -74,26 +82,28 @@ export class ZKLoginStore {
   }
 
   private genEphemeralKeyPair() {
-    const ephemeralKeyPair = window.sessionStorage.getItem("ephemeralKeyPair");
+    const ephemeralKeyPair = window.localStorage.getItem("ephemeralKeyPair");
 
     if (ephemeralKeyPair) {
       this.ephemeralKeyPair = Ed25519Keypair.fromSecretKey(
         fromB64(ephemeralKeyPair),
       );
     } else {
-      this.ephemeralKeyPair = Ed25519Keypair.generate();
-      window.sessionStorage.setItem(
+      const ephemeralKeyPair = Ed25519Keypair.generate();
+      window.localStorage.setItem(
         "ephemeralKeyPair",
-        this.ephemeralKeyPair.export().privateKey,
+        ephemeralKeyPair.export().privateKey,
       );
+      this.ephemeralKeyPair = ephemeralKeyPair;
     }
+    console.log("privateKey: ", this.ephemeralKeyPair.export().privateKey);
   }
 
   private async getEpoch() {
     const { epoch } = await client.getLatestSuiSystemState();
     this.epoch = {
       currentEpoch: Number(epoch),
-      maxEpoch: Number(epoch) + 10,
+      maxEpoch: Number(epoch) + 1000,
     };
   }
 
@@ -102,10 +112,10 @@ export class ZKLoginStore {
       throw new Error("epoch is not defined");
     }
 
-    let randomness = window.sessionStorage.getItem("randomness");
+    let randomness = window.localStorage.getItem("randomness");
     if (randomness === null) {
       randomness = generateRandomness();
-      window.sessionStorage.setItem("randomness", randomness);
+      window.localStorage.setItem("randomness", randomness);
     }
 
     const nonce = generateNonce(
@@ -113,6 +123,8 @@ export class ZKLoginStore {
       this.epoch.maxEpoch,
       randomness,
     );
+
+    console.log({ randomness, nonce });
 
     this.nonce = {
       randomness,
@@ -237,13 +249,11 @@ class ZKLoginClient {
   }
 }
 
-export const upsertSalt = async (id_token: string) => {
-  const credential = GoogleAuthProvider.credential(id_token);
-  await signInWithCredential(auth, credential);
-
+export const getSalt = async () => {
   if (auth.currentUser?.uid == null) {
     throw new Error("auth.currentUser?.uid is not defined");
   }
+
   const docRef = doc(db, "users", auth.currentUser.uid);
   const docSnap = await getDoc(docRef);
 
@@ -251,19 +261,101 @@ export const upsertSalt = async (id_token: string) => {
     const data = docSnap.data();
 
     if (data?.salt) {
-      return data.salt;
+      return data.salt as string;
     }
   }
+};
 
-  const salt = generateRandomness();
+export const insertSalt = async (id_token: string) => {
+  const credential = GoogleAuthProvider.credential(id_token);
+  await signInWithCredential(auth, credential);
 
-  setDoc(
+  if (auth.currentUser?.uid == null) {
+    throw new Error("auth.currentUser?.uid is not defined");
+  }
+
+  window.localStorage.setItem("id_token", id_token);
+
+  const docRef = doc(db, "users", auth.currentUser.uid);
+  const salt = await getSalt();
+
+  if (salt) {
+    return salt;
+  }
+
+  const saltValue = generateRandomness();
+
+  await setDoc(
     docRef,
     {
-      salt,
+      salt: saltValue,
     },
     { merge: true },
   );
 
-  return salt;
+  return saltValue;
+};
+
+function getSuiMintTransactionBlock(
+  sender: string,
+  title: string,
+  imageUrl: string,
+): TransactionBlock {
+  const txb = new TransactionBlock();
+  txb.setSender(sender);
+  // txb.setGasPrice(5);
+  // txb.setGasBudget(5_000_000);
+
+  txb.moveCall({
+    target: `0xe080263e8e3f6169574a24f15cec05d904dbeee9d5d5103b9c8d035efe8eb0d3::story_nft::mint`,
+    arguments: [txb.pure(title), txb.pure(imageUrl)],
+  });
+
+  return txb;
+}
+
+export const suiMint = async (
+  sender: string,
+  store: ZKLoginStore,
+  {
+    title,
+    imageUrl,
+  }: {
+    title: string;
+    imageUrl: string;
+  },
+) => {
+  const txb = getSuiMintTransactionBlock(sender, title, imageUrl);
+
+  const result = await txb.sign({
+    client,
+    signer: store.ephemeralKeyPair,
+  });
+
+  const res = await client.executeTransactionBlock({
+    transactionBlock: result.bytes,
+    signature: store.client!.genZkLoginSignature(result.signature),
+  });
+
+  const transactionBlock = await client.waitForTransactionBlock({
+    digest: res.digest,
+    options: {
+      showEvents: true,
+      showEffects: true,
+    },
+  });
+
+  await addDoc(collection(db, "mints"), {
+    chain: "sui",
+    network,
+    digest: res.digest,
+    sender,
+    owner: sender,
+    uid: auth.currentUser?.uid,
+  });
+
+  const object_id = (transactionBlock.events?.[0]?.parsedJson as any)
+    ?.object_id as string;
+
+  return `https://suiexplorer.com/object/${object_id}?network=${network}`;
 };
