@@ -43,7 +43,7 @@ module storytime::story_nft {
             // For `name` one can use the `Hero.name` property
             utf8(b"{name}"),
             // For `link` one can build a URL using an `id` property
-            utf8(b"https://story.storytime.one/{id}"),
+            utf8(b"https://data.storytime.one/story/{id}"),
             // For `image_url` use an IPFS template + `image_url` property.
             utf8(b"https://image.storytime.one/images/{image_url}"),
             // Description is static for all `Hero` objects.
