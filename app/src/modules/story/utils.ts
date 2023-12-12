@@ -1,6 +1,11 @@
 import dedent from "dedent";
 import { RawScene, Scene } from "../../types/story";
 
+function escapeJsonBug(content: string) {
+  // next line break the json parser
+  return content.replace(/(?:\r\n|\r|\n)/g, "");
+}
+
 function stripMarkdown(content: string) {
   // Regular expression to match Markdown JSON code block
   const regex = /^```json\n([\s\S]*?)\n```$/;
@@ -20,7 +25,7 @@ export const parseScene = (content: string): Scene => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cont: any = {};
   try {
-    const markdownStripped = stripMarkdown(content);
+    const markdownStripped = escapeJsonBug(stripMarkdown(content));
     cont = JSON.parse(markdownStripped) as RawScene;
   } catch (e) {
     console.log(e);
@@ -50,9 +55,7 @@ export const parseStoryGuideline = (
   let cont: any = {};
   try {
     console.log(content);
-    const markdownStripped = stripMarkdown(
-      content.replace(/(?:\r\n|\r|\n)/g, ""),
-    );
+    const markdownStripped = escapeJsonBug(stripMarkdown(content));
     console.log(markdownStripped);
     cont = JSON.parse(markdownStripped) as RawScene;
   } catch (e) {

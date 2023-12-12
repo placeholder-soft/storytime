@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { FC, ReactNode } from "react";
 
 const StyledHeaderName = styled.a`
+  z-index: 9;
   color: #000;
   font-size: 20px;
   font-style: normal;
@@ -26,6 +27,7 @@ export const PageContainer = styled.div`
   min-height: 100vh;
   padding: 39px 66px;
   overflow: hidden;
+  box-sizing: border-box;
 `;
 
 const StyledContentContainer = styled.div`

@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { currentSceneSelector } from "../modules/story/selectors";
 import { updateStory, toScene } from "../modules/story/actions";
 import { StoryProgressPromptRole } from "../types/story";
+import Loader from "../components/Loader";
 
 const BackgroundImageContainer = styled.div<{ backgroundImageUrl: string }>`
   background-image: url(${(props) => props.backgroundImageUrl});
   background-size: cover;
   background-position: center;
-  height: 100vh; // Full height of the viewport
-  width: 100%; // Full width of the viewport
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
   align-items: center; // Center the content vertically and horizontally
-  text-align: center;
 `;
 
 const QuoteContainer = styled.div`
@@ -25,18 +28,28 @@ const QuoteContainer = styled.div`
       rgba(24, 24, 24, 0.8)
     ),
     linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
-  font-size: 24px; /* Adjust as needed */
   width: 90%; /* Adjust as needed */
   position: absolute;
   bottom: 100px; /* Adjust as needed */
   left: 50%;
   transform: translateX(-50%);
-  padding: 28px;
+  padding: 20px;
+`;
+
+const StyledLoader = styled(Loader)`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
 `;
 
 const QuoteText = styled.p`
-  color: #ffffff;
-  font-size: 24px; /* Adjust as needed */
+  color: #fff;
+  font-family: Inter Tight;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: capitalize;
 `;
 
 const ButtonContainer = styled.div`
@@ -47,11 +60,19 @@ const ButtonContainer = styled.div`
 `;
 
 const Button = styled.button`
-  background-color: #000000; /* Adjust as needed */
   color: #ffffff;
-  border: none;
-  padding: 10px 20px; /* Adjust as needed */
+  padding: 4px 25px; /* Adjust as needed */
   cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  background: rgba(90, 90, 90, 1);
+  color: #fff;
+  font-family: Inter Tight;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 171.429% */
+  text-transform: uppercase;
 `;
 
 const OptionButtonContainer = styled.div`
@@ -60,7 +81,7 @@ const OptionButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 20px;
-  gap: 10px; /* Space between options */
+  gap: 33px; /* Space between options */
 `;
 
 const OptionButton = styled.button`
@@ -68,13 +89,14 @@ const OptionButton = styled.button`
   color: white;
   border: none;
   border-radius: 20px; /* Rounded corners */
-  padding: 10px 30px;
+  padding: 15px 100px;
   text-align: center;
   font-size: 16px;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Box shadow for a 3D effect */
   text-transform: uppercase; /* Uppercase text */
-  width: 200px; /* Fixed width, adjust as needed */
+  border-radius: 10px;
+  background: rgba(24, 24, 24, 0.6);
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.8); /* Darken button on hover */
@@ -83,6 +105,8 @@ const OptionButton = styled.button`
 
 const Scene = () => {
   const [step, setStep] = useState(0); // note: 0 is description, 1 is options
+  const [loading, setLoading] = useState(false);
+  const [dots, setDots] = useState("");
   const {
     type,
     sceneNumber,
@@ -94,12 +118,40 @@ const Scene = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (sceneNumber) {
+      setStep(0);
+      setLoading(false);
+    }
+  }, [sceneNumber]);
+
+  useEffect(() => {
+    let timer;
+    if (loading && !timer) {
+      timer = setInterval(() => {
+        if (dots.length < 3) {
+          setDots((prev) => (prev += "."));
+        } else {
+          setDots("");
+        }
+      }, 500);
+    }
+    if (!loading && timer) {
+      clearInterval(timer);
+      timer = undefined;
+    }
+    return () => {
+      clearInterval(timer);
+    };
+  }, [dots, loading]);
+
   const onOptionClick = (val: string) => {
     dispatch(
       updateStory({
         message: { role: StoryProgressPromptRole.User, content: val },
       }),
     );
+    setLoading(true);
   };
 
   const onStoryEnd = () => {
@@ -107,6 +159,20 @@ const Scene = () => {
     // go to mint page
     navigate("/mint");
   };
+
+  if (loading) {
+    return (
+      <BackgroundImageContainer
+        backgroundImageUrl={sceneImage}
+        onClick={onStoryEnd}
+      >
+        <QuoteContainer>
+          <QuoteText>Loading Storyline{dots}</QuoteText>
+          <StyledLoader />
+        </QuoteContainer>
+      </BackgroundImageContainer>
+    );
+  }
 
   if (type !== "story-ending") {
     return (
