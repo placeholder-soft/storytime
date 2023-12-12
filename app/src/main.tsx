@@ -2,7 +2,7 @@
 import ReactDOM from "react-dom/client";
 import "@mysten/dapp-kit/dist/index.css";
 import "@radix-ui/themes/styles.css";
-
+import './index.css'
 import { getFullnodeUrl } from "@mysten/sui.js/client";
 import {
   SuiClientProvider,
