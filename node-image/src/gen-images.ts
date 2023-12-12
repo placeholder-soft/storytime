@@ -37,7 +37,7 @@ current:
 Generate image base on current scene while ensuring the options are in the scene. Ensure the character is accurate to the description and use the descriptions defined in the style, and setting section
     `,
     n: 1,
-    size: "1024x1024",
+    size: "1792x1024",
   });
 
   console.log(`response: ${JSON.stringify(response, null, 2)}`);
