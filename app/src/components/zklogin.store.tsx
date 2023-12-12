@@ -103,7 +103,7 @@ export class ZKLoginStore {
     const { epoch } = await client.getLatestSuiSystemState();
     this.epoch = {
       currentEpoch: Number(epoch),
-      maxEpoch: Number(epoch) + 10,
+      maxEpoch: Number(epoch) + 1000,
     };
   }
 
