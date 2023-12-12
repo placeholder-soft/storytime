@@ -10,18 +10,13 @@
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { generateImage } from "./generateImage";
-import admin from "firebase-admin";
 
-import adminKey from "./credentials/admin-key.json";
 import { CloudFunctionsTypeWithUid } from "./handlersType";
 import { getStory } from "./getStory";
 import { gaslessMint } from "./gaslessMint";
 
+export * from "./firebase";
 export * from "./serve";
-
-admin.initializeApp({
-  credential: admin.credential.cert(adminKey as any),
-});
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
