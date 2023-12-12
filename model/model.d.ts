@@ -1,4 +1,4 @@
-export type Character = { type: string; name: string };
+export type Character = { type: string; name: string; customType: string };
 
 // user/{uid}/projects/{projectId}
 

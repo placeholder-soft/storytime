@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Project } from "model";
 import { format } from "date-fns";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -10,8 +12,13 @@ import {
   PageContainer,
 } from "../../components/Layout/Layout";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Button } from "@radix-ui/themes";
+import {
+  createCharacterName,
+  createCharacterType,
+} from "../../modules/character/actions";
+import { loadStory } from "../../modules/story/actions";
 
 export const StyledContentContainer = styled(ContentContainer)`
   display: flex;
@@ -167,6 +174,9 @@ const StyledIndexTag = styled.div`
 
 const DashboardPage = protectedRoute(({ user }: { user: User }) => {
   const [projects, setProjects] = useState<Project[]>();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const myProjects = query(
       collection(db, "projects"),
@@ -176,6 +186,29 @@ const DashboardPage = protectedRoute(({ user }: { user: User }) => {
       setProjects(snapshot.docs.map((x) => x.data()) as Project[]);
     });
   }, [user.uid]);
+
+  const openBook = (value: Project) => {
+    const { character, rawPrompts, title, introduction, coverImage, scenes } =
+      value;
+    dispatch(createCharacterName({ characterName: character.name }));
+    dispatch(
+      createCharacterType({
+        characterType: character.type,
+        customCharacterType: character.customType,
+      }),
+    );
+    dispatch(
+      loadStory({
+        storyProgressPrompts: rawPrompts,
+        title,
+        introduction,
+        coverImage,
+        scenes,
+      }),
+    );
+    navigate("/story?read=true");
+  };
+
   if (projects == null) {
     return null;
   }
@@ -208,7 +241,11 @@ const DashboardPage = protectedRoute(({ user }: { user: User }) => {
         </StyledTitleContainer>
         <StyledStoryContainer>
           {projects.map((story, idx) => (
-            <StyledStoryItem>
+            <StyledStoryItem
+              onClick={() => {
+                openBook(story);
+              }}
+            >
               <StyledStoryImage src={story.coverImage} alt="" />
               <div>
                 <StyledInfo>
