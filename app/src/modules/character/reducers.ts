@@ -1,6 +1,8 @@
 import {
-  CreateCharacterSuccessAction,
-  CREATE_CHARACTER_SUCCESS,
+  CREATE_CHARACTER_NAME,
+  CREATE_CHARACTER_TYPE,
+  CREATE_CHARACTER_IMAGE_SUCCESS,
+  CharacterAction,
 } from "./actions";
 
 // Initial State
@@ -10,18 +12,23 @@ export type CharacterState = {
   characterImage: Blob;
 };
 const initialState: CharacterState = {
-  characterName: "Gary", // TODO: update from start UI
+  characterName: "",
   characterType: "",
   characterImage: new Blob(),
 };
 
 // Reducer
-const characterReducer = (
-  state = initialState,
-  action: CreateCharacterSuccessAction
-) => {
+const characterReducer = (state = initialState, action: CharacterAction) => {
   switch (action.type) {
-    case CREATE_CHARACTER_SUCCESS: {
+    case CREATE_CHARACTER_NAME: {
+      const { characterName } = action.data;
+      return { ...state, characterName };
+    }
+    case CREATE_CHARACTER_TYPE: {
+      const { characterType } = action.data;
+      return { ...state, characterType };
+    }
+    case CREATE_CHARACTER_IMAGE_SUCCESS: {
       const { blob, characterType } = action.data;
       return { ...state, characterImage: blob, characterType };
     }
