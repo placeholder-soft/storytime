@@ -1,3 +1,4 @@
+import dedent from "dedent";
 import { RawScene, Scene } from "../../types/story";
 
 function stripMarkdown(content: string) {
@@ -26,43 +27,108 @@ export const parseScene = (content: string): Scene => {
   }
   return {
     type: cont.type,
-    character: cont.character,
-    setting: cont.setting,
     sceneNumber: cont.sceneNumber,
     sceneImage: "", // generate in next step
     sceneTitle: cont.sceneTitle,
     sceneDescription: cont.sceneDescription,
-    optionPrompt: cont.optionPrompt,
+    optionsPrompt: cont.optionsPrompt,
     options: cont.options,
   };
 };
 
 export const parseStoryGuideline = (
   content: string,
-): { title: string; introduction: string; scene: Scene } => {
+): {
+  title: string;
+  introduction: string;
+  character: string;
+  setting: string;
+  scene: Scene;
+} => {
   // TODO: parse the story title, coverImage, intro and first `Scene` type out of AI generated content
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cont: any = {};
   try {
-    const markdownStripped = stripMarkdown(content);
+    console.log(content);
+    const markdownStripped = stripMarkdown(
+      content.replace(/(?:\r\n|\r|\n)/g, ""),
+    );
+    console.log(markdownStripped);
     cont = JSON.parse(markdownStripped) as RawScene;
   } catch (e) {
     console.log(e);
   }
+  console.log(cont);
   return {
     title: cont.title,
     introduction: cont.introduction,
-    // coverImageUrl: "",  // TODO: get from other service
+    character: cont.character,
+    setting: cont.setting,
     scene: {
       type: cont.type,
-      character: cont.character,
-      setting: cont.setting,
       sceneNumber: cont.sceneNumber,
       sceneTitle: cont.sceneTitle,
       sceneImage: "", // generate in next step
       sceneDescription: cont.sceneDescription,
-      optionPrompt: cont.optionPrompt,
+      optionsPrompt: cont.optionsPrompt,
       options: cont.options,
     },
   };
+};
+
+const stripScene = (scene: Scene) => {
+  return {
+    sceneNumber: scene.sceneNumber,
+    sceneTitle: scene.sceneTitle,
+    sceneDescription: scene.sceneDescription,
+    optionsPrompt: scene.optionsPrompt,
+    options: scene.options,
+  };
+};
+
+type MakePromptInput = {
+  character: string;
+  setting: string;
+  introduction: string;
+  pastScene?: Scene;
+  currentScene: Scene;
+};
+export const makeImagePrompt = ({
+  character,
+  setting,
+  introduction,
+  pastScene,
+  currentScene,
+}: MakePromptInput) => {
+  const pastSceneStr = pastScene
+    ? `
+  past:
+  ${JSON.stringify(stripScene(pastScene))}`
+    : "";
+
+  const currentSceneStr = currentScene
+    ? `
+  current:
+  ${JSON.stringify(stripScene(currentScene))}`
+    : "";
+
+  return dedent`
+  Style descriptions:
+Pan out wider and make the scene a bit larger, plump character, cute style, character sheet, illustration for book, children's book, watercolor clipart, full Illustration, 4k, sharp focus, watercolor, smooth soft skin, symmetrical, soft lighting, detailed face, concept art, watercolor style, strybk, children's style fairy tales, chibi kawaii, . Octane rendering, 3d, perfect face, detailed face, delicate face, perfect sharp lips, detailed eyes. Craig Davison, Aubrey Beardsley, Conrad Roset, Aikut Aidogdu, Agnes Cecil, watercolor style
+
+Character Design descriptions:
+${character}
+
+Setting Design descriptions:
+${setting}
+
+Introduction: 
+${introduction}
+
+${pastSceneStr}
+
+${currentSceneStr}
+
+Generate image base on current scene while ensuring the options are in the scene. Ensure the character is accurate to the description and use the descriptions defined in the style, and setting section
+  `;
 };

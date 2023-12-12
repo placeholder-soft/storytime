@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { currentSceneSelector } from "../modules/story/selectors";
 import { updateStory, toScene } from "../modules/story/actions";
@@ -82,8 +83,15 @@ const OptionButton = styled.button`
 
 const Scene = () => {
   const [step, setStep] = useState(0); // note: 0 is description, 1 is options
-  const { sceneNumber, sceneDescription, sceneImage, optionPrompt, options } =
-    useSelector(currentSceneSelector);
+  const {
+    type,
+    sceneNumber,
+    sceneDescription,
+    sceneImage,
+    optionsPrompt,
+    options,
+  } = useSelector(currentSceneSelector);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const onOptionClick = (val: string) => {
@@ -94,49 +102,68 @@ const Scene = () => {
     );
   };
 
-  return (
-    <BackgroundImageContainer backgroundImageUrl={sceneImage}>
-      {step === 0 && (
-        <QuoteContainer>
-          <QuoteText>{sceneDescription}</QuoteText>
-          <ButtonContainer>
-            <Button
-              onClick={() => {
-                dispatch(toScene({ index: sceneNumber - 1 }));
-              }}
-            >
-              Back
-            </Button>
-            {options && options.length && (
+  const onStoryEnd = () => {
+    // TODO: upload book to firebase
+    // go to mint page
+    navigate("/mint");
+  };
+
+  if (type !== "story-ending") {
+    return (
+      <BackgroundImageContainer backgroundImageUrl={sceneImage}>
+        {step === 0 && (
+          <QuoteContainer>
+            <QuoteText>{sceneDescription}</QuoteText>
+            <ButtonContainer>
               <Button
                 onClick={() => {
-                  setStep(1);
+                  dispatch(toScene({ index: sceneNumber - 1 }));
                 }}
               >
-                Next
+                Back
               </Button>
+              {options && options.length && (
+                <Button
+                  onClick={() => {
+                    setStep(1);
+                  }}
+                >
+                  Next
+                </Button>
+              )}
+            </ButtonContainer>
+          </QuoteContainer>
+        )}
+        {step === 1 && (
+          <>
+            {options && options.length && (
+              <OptionButtonContainer>
+                {options.map((opt) => (
+                  <OptionButton key={opt} onClick={() => onOptionClick(opt)}>
+                    {opt}
+                  </OptionButton>
+                ))}
+              </OptionButtonContainer>
             )}
-          </ButtonContainer>
-        </QuoteContainer>
-      )}
-      {step === 1 && (
-        <>
-          {options && options.length && (
-            <OptionButtonContainer>
-              {options.map((opt) => (
-                <OptionButton key={opt} onClick={() => onOptionClick(opt)}>
-                  {opt}
-                </OptionButton>
-              ))}
-            </OptionButtonContainer>
-          )}
-          {optionPrompt && (
-            <QuoteContainer>
-              <QuoteText>{optionPrompt}</QuoteText>
-            </QuoteContainer>
-          )}
-        </>
-      )}
+            {optionsPrompt && (
+              <QuoteContainer>
+                <QuoteText>{optionsPrompt}</QuoteText>
+              </QuoteContainer>
+            )}
+          </>
+        )}
+      </BackgroundImageContainer>
+    );
+  }
+
+  return (
+    <BackgroundImageContainer
+      backgroundImageUrl={sceneImage}
+      onClick={onStoryEnd}
+    >
+      <QuoteContainer>
+        <QuoteText>{sceneDescription}</QuoteText>
+      </QuoteContainer>
     </BackgroundImageContainer>
   );
 };
