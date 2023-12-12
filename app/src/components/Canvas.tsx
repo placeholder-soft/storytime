@@ -2,15 +2,13 @@ import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { fabric } from "fabric";
 
-const Container = styled.div`
-  width: 100%;
-  flex: 1;
-  border: 1px solid red;
-`;
+const StyledCanvasContainer = styled.div`
+  width: 50vw;
+`
 const RawCanvas = styled.canvas`
-  border: 1px solid black;
-  width: 100% !important;
-  height: auto% !important;
+  width: 50vw!important;
+  height: 100vh !important;
+  flex: 1;
 `;
 
 const dataURLToBlob = (dataURL: string) => {
@@ -59,9 +57,9 @@ const SketchCanvas: React.FC<SketchCanvas> = ({ onUpdate }) => {
   }, []);
 
   return (
-    <Container>
-      <RawCanvas width={600} height={600} ref={canvasRef} />
-    </Container>
+    <StyledCanvasContainer>
+      <RawCanvas ref={canvasRef} />
+    </StyledCanvasContainer>
   );
 };
 

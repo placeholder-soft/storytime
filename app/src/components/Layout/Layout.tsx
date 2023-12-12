@@ -6,11 +6,13 @@ const StyledHeaderName = styled.a`
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
-  line-height: 30px; /* 150% */
+  line-height: 30px;
   letter-spacing: 3px;
   position: fixed;
   top: 40px;
   left: 66px;
+  z-index: 10;
+  text-decoration: none;
 `;
 
 export const Header: FC = () => {
