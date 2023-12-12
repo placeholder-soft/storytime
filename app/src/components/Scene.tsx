@@ -211,7 +211,7 @@ const Scene = () => {
       convertUndefinedToNull(project),
     );
     // go to mint page
-    navigate("/mint?projectId=" + newProject.id);
+    navigate(`/mint/${newProject.id}`);
   };
 
   if (loading) {
