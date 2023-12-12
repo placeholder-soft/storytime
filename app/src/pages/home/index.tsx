@@ -1,10 +1,14 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Header, PageContainer } from "../../components/Layout/Layout";
 import styled from "styled-components";
 import step1 from "./_/step1.png";
 import step2 from "./_/step2.png";
 import step3 from "./_/step3.png";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router";
+import { upsertSalt, ZKLoginStore } from "../../components/zklogin.store.tsx";
+import queryString from "query-string";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase.ts";
 
 const StyledTitle = styled.h1`
   color: #000;
@@ -62,7 +66,7 @@ const StepItem: FC<{
   );
 };
 
-const StyledStartButton = styled(Link)`
+const StyledStartButton = styled.button`
   padding: 4px 25px;
   border-radius: 10px;
   background: #000;
@@ -77,6 +81,52 @@ const StyledStartButtonContainer = styled.div`
   margin-top: 140px;
   justify-content: center;
 `;
+
+const LoginButton: FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [store, setStore] = useState<ZKLoginStore>(new ZKLoginStore());
+
+  useEffect(() => {
+    (async () => {
+      const oauthParams = queryString.parse(location.hash);
+      if (
+        oauthParams &&
+        oauthParams.id_token &&
+        store.info?.id_token !== oauthParams.id_token
+      ) {
+        const salt = await upsertSalt(oauthParams.id_token as string);
+        setStore(
+          new ZKLoginStore({
+            salt,
+            id_token: oauthParams.id_token as string,
+          }),
+        );
+        const listener = auth.onAuthStateChanged((x) => {
+          if (x != null) {
+            listener();
+            navigate("/dashboard");
+          }
+        });
+      }
+    })();
+  }, [location.hash, navigate, store.info?.id_token]);
+
+  return (
+    <StyledStartButton
+      onClick={() => {
+        if (auth.currentUser != null) {
+          navigate("/dashboard");
+        } else {
+          void store.signInWithGoogle(window.location.href);
+        }
+      }}
+    >
+      Get started
+    </StyledStartButton>
+  );
+};
 
 const HomePage: FC = () => {
   return (
@@ -101,7 +151,7 @@ const HomePage: FC = () => {
         />
       </StyledStepContainer>
       <StyledStartButtonContainer>
-        <StyledStartButton to="/login">Get started</StyledStartButton>
+        <LoginButton />
       </StyledStartButtonContainer>
     </PageContainer>
   );
