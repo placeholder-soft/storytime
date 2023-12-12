@@ -6,12 +6,16 @@ import {
   createCharacterImageSuccess,
 } from "./actions";
 
+const addPrefix = (val: string) => {
+  return `A ${val} character. The character style should be plump character, cute style, character sheet, illustration for book, children's book, watercolor clipart, full Illustration, 4k, sharp focus, watercolor, smooth soft skin, symmetrical, soft lighting, detailed face, concept art, watercolor style, strybk, children's style fairy tales, chibi kawaii, . Octane rendering, 3d, perfect face, detailed face, delicate face, perfect sharp lips, detailed eyes. Craig Davison, Aubrey Beardsley, Conrad Roset, Aikut Aidogdu, Agnes Cecil, watercolor style.`;
+};
+
 // Sample worker saga
 function* createCharacterImage(action: CreateCharacterImageAction) {
   const { sketchBlob, prompt } = action.data;
   const formData = new FormData();
   formData.append("sketch_file", sketchBlob);
-  formData.append("prompt", prompt);
+  formData.append("prompt", addPrefix(prompt));
 
   try {
     const { data } = yield call(
@@ -23,10 +27,10 @@ function* createCharacterImage(action: CreateCharacterImageAction) {
           "x-api-key": import.meta.env.VITE_CLIPDROP_SECRET,
         },
         responseType: "blob",
-      }
+      },
     );
     yield put(
-      createCharacterImageSuccess({ blob: data, characterType: prompt })
+      createCharacterImageSuccess({ blob: data, characterType: prompt }),
     );
   } catch (e) {
     console.error(e);

@@ -89,9 +89,10 @@ export const ZKLogin = () => {
         <button
           onClick={() => {
             auth.signOut();
-            setUserAddress(undefined);
+            store.client = undefined;
             window.localStorage.removeItem("id_token");
             store.resetStorage();
+            setUserAddress(undefined);
             navigate(`/debug`);
           }}
         >

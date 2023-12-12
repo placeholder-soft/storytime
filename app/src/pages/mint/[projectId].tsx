@@ -14,16 +14,12 @@ import {
   StyledTitleContainer,
 } from "../dashboard";
 import { Button } from "@radix-ui/themes";
-import {
-  ZKLoginStore,
-  suiMint,
-  insertSalt,
-} from "../../components/zklogin.store";
+import { ZKLoginStore, insertSalt } from "../../components/zklogin.store";
 import { EVM } from "../../components/evm";
 import { useParams } from "react-router";
 import { Project } from "model";
 import { doc, onSnapshot, DocumentSnapshot } from "firebase/firestore";
-import { db } from "../../firebase.ts";
+import { callFunction, db } from "../../firebase.ts";
 
 const StyledInfoContainer = styled.div`
   display: flex;
@@ -140,11 +136,21 @@ const SuiMintButton = () => {
     }
     setLoading(true);
     try {
-      const url = await suiMint(store.client.userAddress, store, {
-        title: "The Mysterious Map",
-        imageUrl: "bb8018b7-4b6a-4841-a0ea-8e642b56a0ca",
-      });
-      setUrl(url);
+      // const url = await suiMint(store.client.userAddress, store, {
+      //   title: "The Mysterious Map",
+      //   imageUrl: "bb8018b7-4b6a-4841-a0ea-8e642b56a0ca",
+      // });
+      // setUrl(url);
+
+      // testing out gasless minting
+      const res = await callFunction(
+        "gaslessMint",
+        store.client.userAddress,
+        "The Mysterious Map",
+        "bb8018b7-4b6a-4841-a0ea-8e642b56a0ca",
+      );
+
+      setUrl(`https://suiexplorer.com/object/${res.objectId}?network=devnet`);
     } catch (e) {
       console.log(e);
       throw e;
