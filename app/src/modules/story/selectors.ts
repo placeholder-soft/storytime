@@ -5,6 +5,11 @@ import { RootState } from "..";
 // Assuming your state structure has a counter object
 const getStoryBase = (state: RootState) => state.story;
 
+export const storyBaseSelector = createSelector(
+  [getStoryBase],
+  (story) => story,
+);
+
 export const storySelector = createSelector(
   [getStoryBase],
   ({ title, introduction, coverImage, currentSceneIndex }) => ({

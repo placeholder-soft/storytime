@@ -20,8 +20,6 @@ export type RawScene = {
 };
 
 export type Scene = {
-  //   title: string; // project
-  //   introduction: string; // project
   type: "story-introduction" | "story-followup" | "story-ending";
   sceneNumber: number;
   sceneTitle: string;

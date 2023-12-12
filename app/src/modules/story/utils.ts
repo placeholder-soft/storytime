@@ -59,14 +59,11 @@ export const parseStoryGuideline = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cont: any = {};
   try {
-    console.log(content);
     const markdownStripped = escapeJsonBug(stripMarkdown(content));
-    console.log(markdownStripped);
     cont = JSON.parse(markdownStripped) as RawScene;
   } catch (e) {
     console.log(e);
   }
-  console.log(cont);
   return {
     title: cont.title,
     introduction: cont.introduction,
