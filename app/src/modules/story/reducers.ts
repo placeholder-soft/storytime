@@ -8,6 +8,7 @@ import {
   UPDATE_STORY_SUCCESS,
 } from "./actions";
 import { parseStoryGuideline } from "./utils";
+import { STORY_MOCK } from "../../mock";
 
 // Initial State
 export type StoryState = {
@@ -26,6 +27,8 @@ const initialState: StoryState = {
   currentSceneIndex: 0,
   scenes: [],
 };
+
+// const initialState: StoryState = STORY_MOCK;
 
 // Reducer
 const storyReducer = (state = initialState, action: StoryAction) => {
