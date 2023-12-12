@@ -9,23 +9,30 @@ import {
   characterTypeSelector,
 } from "../../modules/character/selectors";
 import { createCharacterImage } from "../../modules/character/actions";
-import demoImg from "../characterBase/_/1.png";
 import { Header } from "../../components/Layout/Layout";
 import { Button, DropdownMenu, TextField } from "@radix-ui/themes";
 import { CaretDownIcon } from "@radix-ui/react-icons";
+import { CHARACTER_BASE } from "../../shared/characterTypes";
 
 const PreviewContainer = styled.div`
   position: relative;
   width: 50vw;
   height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const PreviewImage = styled.img`
   width: 100%;
 `;
 
-const Preview: FC<{ data: Blob }> = ({ data }) => {
-  return <PreviewImage src={URL.createObjectURL(data)} alt="" />;
+const Preview: FC<{ data: Blob; defaultImage?: string }> = ({
+  data,
+  defaultImage,
+}) => {
+  const imageSrc = data ? URL.createObjectURL(data) : defaultImage;
+  return imageSrc ? <PreviewImage src={imageSrc} alt="" /> : null;
 };
 
 export const StyledSelectButton = styled(Button)`
@@ -120,6 +127,8 @@ const CanvasPage = () => {
   const characterImage = useSelector(characterImageSelector);
   const navigate = useNavigate();
   const characterType = useSelector(characterTypeSelector);
+  const defaultImageUrl = CHARACTER_BASE.find((c) => c.title === characterType)
+    ?.image;
 
   useEffect(() => {
     if (characterType && !prompt) {
@@ -127,13 +136,9 @@ const CanvasPage = () => {
     }
   }, [characterType]);
 
-  const convert = () => {
-    dispatch(createCharacterImage({ sketchBlob, prompt }));
-
-    // TODO: refactor later
-    setTimeout(() => {
-      navigate("/story");
-    }, 2000);
+  const renderPreview = (val) => {
+    setSketchBlob(val);
+    dispatch(createCharacterImage({ sketchBlob: val, prompt }));
   };
 
   return (
@@ -141,7 +146,7 @@ const CanvasPage = () => {
       <Header />
       <ContentContainer>
         <StyledCanvasContainer>
-          <Canvas onUpdate={(val) => setSketchBlob(val)} />
+          <Canvas onUpdate={(val) => renderPreview(val)} />
           <StyledFooterToolContainer>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
@@ -166,15 +171,16 @@ const CanvasPage = () => {
           </StyledFooterToolContainer>
         </StyledCanvasContainer>
         <PreviewContainer>
-          <Preview data={characterImage} />
-          <Link to="/characterBase">
-            <StyledSelectButton>Select Character</StyledSelectButton>
-          </Link>
+          <Preview data={characterImage} defaultImage={defaultImageUrl} />
+          <StyledSelectButton
+            onClick={() => {
+              navigate("/story");
+            }}
+          >
+            Select Character
+          </StyledSelectButton>
         </PreviewContainer>
       </ContentContainer>
-      {/*<div>*/}
-      {/*  <button onClick={convert}>Convert</button>*/}
-      {/*</div>*/}
     </>
   );
 };

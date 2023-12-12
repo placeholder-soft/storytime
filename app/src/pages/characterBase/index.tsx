@@ -3,28 +3,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { createCharacterType } from "../../modules/character/actions";
-import {  PageContainer } from "../../components/Layout/Layout";
+import { PageContainer } from "../../components/Layout/Layout";
 import Button from "../../components/Button";
-import character1 from "./_/1.png";
-import character2 from "./_/2.png";
-import character3 from "./_/3.png";
-import {StyledContentContainer} from "../dashboard";
-
-const CHARACTER_BASE = [
-  {
-    title: "Bear",
-    image: character1,
-  },
-  {
-    title: "Human",
-    image: character2,
-  },
-  {
-    title: "Dog",
-    image: character3,
-  },
-];
-
+import { StyledContentContainer } from "../dashboard";
+import { CHARACTER_BASE } from "../../shared/characterTypes";
 
 const StyledTitle = styled.h1`
   color: #000;
@@ -76,7 +58,7 @@ const StyledBaseItemContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 35px;
-`
+`;
 
 const BaseItem: React.FC<{
   selected: boolean;
