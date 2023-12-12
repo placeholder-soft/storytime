@@ -25,7 +25,7 @@ function* createCharacter(action: CreateCharacterAction) {
         responseType: "blob",
       }
     );
-    yield put(createCharacterSuccess({ blob: data, characterName: prompt }));
+    yield put(createCharacterSuccess({ blob: data, characterType: prompt }));
   } catch (e) {
     console.error(e);
   }

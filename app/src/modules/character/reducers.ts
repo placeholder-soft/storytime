@@ -6,10 +6,12 @@ import {
 // Initial State
 export type CharacterState = {
   characterName: string;
+  characterType: string;
   characterImage: Blob;
 };
 const initialState: CharacterState = {
-  characterName: "",
+  characterName: "Gary", // TODO: update from start UI
+  characterType: "",
   characterImage: new Blob(),
 };
 
@@ -20,8 +22,8 @@ const characterReducer = (
 ) => {
   switch (action.type) {
     case CREATE_CHARACTER_SUCCESS: {
-      const { blob, characterName } = action.data;
-      return { ...state, characterImage: blob, characterName };
+      const { blob, characterType } = action.data;
+      return { ...state, characterImage: blob, characterType };
     }
     default:
       return state;

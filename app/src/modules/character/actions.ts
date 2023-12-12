@@ -14,7 +14,7 @@ export const createCharacter = (
   data,
 });
 
-type CreateCharacterSuccessBody = { blob: Blob; characterName: string };
+type CreateCharacterSuccessBody = { blob: Blob; characterType: string };
 export type CreateCharacterSuccessAction = Action & {
   data: CreateCharacterSuccessBody;
 };
