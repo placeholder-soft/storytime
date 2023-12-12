@@ -9,7 +9,10 @@ export const serve = onRequest(
       console.log(`request: ${req.url}`);
       if (req.url === "/hello") {
         res.send("hello");
-      } else if (req.url.startsWith("/story")) {
+        return;
+      }
+
+      if (req.url.startsWith("/story")) {
         const id = req.url.match(/\/sui-(\w+)/)?.[1];
         if (id) {
           const result = await firestore
@@ -23,8 +26,11 @@ export const serve = onRequest(
           const data = result.docs[0].data();
 
           res.redirect(`https://app.storytime.one/story/${data.project_id}`);
+          return;
         }
-      } else if (req.url.startsWith("/images/sui-")) {
+      }
+
+      if (req.url.startsWith("/images/sui-")) {
         const id = req.url.match(/\/sui-(\w+)/)?.[1];
         if (id) {
           const result = await firestore
@@ -42,10 +48,11 @@ export const serve = onRequest(
             .get();
 
           res.redirect(project.data()?.coverImage);
+          return;
         }
-      } else {
-        res.send({ routes: ["/story", "/hello"] });
       }
+
+      res.send({ routes: ["/story", "/hello"] });
     } catch (e) {
       res.status(500).send(e);
     }
