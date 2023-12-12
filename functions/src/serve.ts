@@ -2,7 +2,7 @@ import { log } from "firebase-functions/logger";
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 
 export const serve = onRequest(
-  { region: "asia-east1", memory: "8GiB" },
+  { region: "asia-east1", memory: "8GiB", timeoutSeconds: 3600 },
   async (req, res) => {
     try {
       console.log(`request: ${req.url}`);
