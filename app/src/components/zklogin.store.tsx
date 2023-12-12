@@ -17,7 +17,6 @@ import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 
 const CLIENT_ID =
   "78105453039-rc9sdmkol2dej5u365dfgq6bjeopmu0f.apps.googleusercontent.com";
-const REDIRECT_URI = "http://localhost:5173/debug";
 
 export const SUI_DEVNET_FAUCET = "https://faucet.devnet.sui.io/gas";
 
@@ -46,7 +45,7 @@ export class ZKLoginStore {
   client?: ZKLoginClient;
 
   constructor(readonly info?: { salt: string; id_token: string }) {
-    this.initailize();
+    void this.initialize();
   }
 
   resetStorage() {
@@ -54,7 +53,7 @@ export class ZKLoginStore {
     window.sessionStorage.removeItem("randomness");
   }
 
-  private async initailize() {
+  private async initialize() {
     this.genEphemeralKeyPair();
     await this.getEpoch();
     this.genNone();
@@ -79,13 +78,13 @@ export class ZKLoginStore {
 
     if (ephemeralKeyPair) {
       this.ephemeralKeyPair = Ed25519Keypair.fromSecretKey(
-        fromB64(ephemeralKeyPair)
+        fromB64(ephemeralKeyPair),
       );
     } else {
       this.ephemeralKeyPair = Ed25519Keypair.generate();
       window.sessionStorage.setItem(
         "ephemeralKeyPair",
-        this.ephemeralKeyPair.export().privateKey
+        this.ephemeralKeyPair.export().privateKey,
       );
     }
   }
@@ -112,7 +111,7 @@ export class ZKLoginStore {
     const nonce = generateNonce(
       this.publicKey,
       this.epoch.maxEpoch,
-      randomness
+      randomness,
     );
 
     this.nonce = {
@@ -121,14 +120,14 @@ export class ZKLoginStore {
     };
   }
 
-  async signInWithGoogle() {
+  async signInWithGoogle(from: string) {
     if (this.nonce == null) {
       throw new Error("nonce is not defined");
     }
 
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: from,
       response_type: "id_token",
       scope: "openid email",
       nonce: this.nonce.currentNonce,
@@ -147,7 +146,7 @@ class ZKLoginClient {
   constructor(
     readonly store: ZKLoginStore,
     readonly salt: string,
-    readonly id_token: string
+    readonly id_token: string,
   ) {
     this.jwtPayload = jwtDecode(id_token);
 
@@ -216,7 +215,7 @@ class ZKLoginClient {
       BigInt(this.salt),
       "sub",
       this.jwtPayload.sub!,
-      this.jwtPayload.aud as string
+      this.jwtPayload.aud as string,
     ).toString();
   }
 
@@ -265,7 +264,7 @@ export const upsertSalt = async (id_token: string) => {
     {
       salt,
     },
-    { merge: true }
+    { merge: true },
   );
 
   return salt;
