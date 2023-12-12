@@ -1,6 +1,7 @@
 import { StoryProgress, Scene } from "../../types/story";
 import {
   StoryAction,
+  TO_SCENE,
   INIT_STORY,
   INIT_STORY_SUCCESS,
   UPDATE_STORY,
@@ -11,22 +12,29 @@ import { parseStoryGuideline } from "./utils";
 // Initial State
 export type StoryState = {
   storyProgressPrompts: StoryProgress[];
-  storyTitle: string;
-  storyIntro: string;
-  scene: number;
+  title: string;
+  introduction: string;
+  currentSceneIndex: number;
   scenes: Scene[];
 };
 const initialState: StoryState = {
-  scene: 0,
+  currentSceneIndex: 0,
   storyProgressPrompts: [],
-  storyTitle: "",
-  storyIntro: "",
+  title: "",
+  introduction: "",
   scenes: [],
 };
 
 // Reducer
 const storyReducer = (state = initialState, action: StoryAction) => {
   switch (action.type) {
+    case TO_SCENE: {
+      const { index } = action.data;
+      return {
+        ...state,
+        currentSceneIndex: index,
+      };
+    }
     case INIT_STORY: {
       const { initMessage } = action.data;
       return {
@@ -36,22 +44,34 @@ const storyReducer = (state = initialState, action: StoryAction) => {
     }
     case INIT_STORY_SUCCESS: {
       const { progress } = action.data;
-      const { title, intro, scene } = parseStoryGuideline(progress.content);
+      const { title, introduction, scene } = parseStoryGuideline(
+        progress.content
+      );
       return {
         ...state,
-        storyTitle: title,
-        storyIntro: intro,
-        storyProgressPrompts: [...state.storyProgressPrompts, progress],
+        title,
+        introduction,
         scenes: [...state.scenes, scene],
+        storyProgressPrompts: [...state.storyProgressPrompts, progress],
       };
     }
     case UPDATE_STORY: {
-      // TODO: when users fires their prompt to open AI, add the user role prompt into prompt list
-      return state;
+      // when users fires their prompt to open AI, add the user role prompt into prompt list
+      const { message } = action.data;
+      return {
+        ...state,
+        storyProgressPrompts: [...state.storyProgressPrompts, message],
+      };
     }
     case UPDATE_STORY_SUCCESS: {
-      // TODO: when user received resp from open AI, it includes assistant prompt
-      return state;
+      // when user received resp from open AI, it includes assistant prompt
+      const { progress } = action.data;
+      const { scene } = parseStoryGuideline(progress.content);
+      return {
+        ...state,
+        scenes: [...state.scenes, scene],
+        storyProgressPrompts: [...state.storyProgressPrompts, progress],
+      };
     }
     default:
       return state;

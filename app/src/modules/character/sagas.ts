@@ -1,13 +1,13 @@
 import axios from "axios";
 import { call, put, takeEvery } from "redux-saga/effects";
 import {
-  CREATE_CHARACTER,
-  CreateCharacterAction,
-  createCharacterSuccess,
+  CREATE_CHARACTER_IMAGE,
+  CreateCharacterImageAction,
+  createCharacterImageSuccess,
 } from "./actions";
 
 // Sample worker saga
-function* createCharacter(action: CreateCharacterAction) {
+function* createCharacterImage(action: CreateCharacterImageAction) {
   const { sketchBlob, prompt } = action.data;
   const formData = new FormData();
   formData.append("sketch_file", sketchBlob);
@@ -25,7 +25,9 @@ function* createCharacter(action: CreateCharacterAction) {
         responseType: "blob",
       }
     );
-    yield put(createCharacterSuccess({ blob: data, characterName: prompt }));
+    yield put(
+      createCharacterImageSuccess({ blob: data, characterType: prompt })
+    );
   } catch (e) {
     console.error(e);
   }
@@ -33,5 +35,5 @@ function* createCharacter(action: CreateCharacterAction) {
 
 // Combine all sagas
 export default function* characterSaga() {
-  yield takeEvery(CREATE_CHARACTER, createCharacter);
+  yield takeEvery(CREATE_CHARACTER_IMAGE, createCharacterImage);
 }

@@ -1,7 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import {
+  getFunctions,
+  httpsCallable,
+  connectFunctionsEmulator,
+} from "firebase/functions";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { CloudFunctionsType } from "model/functions";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,3 +23,25 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const functions = getFunctions(app);
+
+export async function callFunction<Name extends keyof CloudFunctionsType>(
+  name: Name,
+  ...args: Parameters<CloudFunctionsType[Name]>
+): Promise<ReturnType<CloudFunctionsType[Name]>> {
+  return await httpsCallable(
+    functions,
+    "execute",
+  )({
+    type: name,
+    args,
+  }).then((a) => a.data as any);
+}
+
+const useEmulator = import.meta.env.VITE_USE_EMULATOR === "true";
+
+if (useEmulator) {
+  connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+  connectFirestoreEmulator(db, "localhost", 8080);
+  connectFunctionsEmulator(functions, "localhost", 5001);
+}

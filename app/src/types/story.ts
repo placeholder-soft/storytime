@@ -8,14 +8,28 @@ export type StoryProgress = {
   content: string;
 };
 
-type SceneOption = {
-  content: string;
-  value: string;
+export type RawScene = {
+  title: string; // project
+  introduction: string; // project
+  type: "story-introduction" | "story-followup" | "story-ending";
+  character: string;
+  setting: string;
+  sceneNumber: number;
+  sceneTitle: string;
+  sceneDescription: string;
+  optionPrompt: string;
+  options: string[];
 };
 
 export type Scene = {
-  index: number;
-  content: string;
-  options: SceneOption[];
-  imageUrl: string;
+  //   title: string; // project
+  //   introduction: string; // project
+  type: "story-introduction" | "story-followup" | "story-ending";
+  character: string;
+  setting: string;
+  sceneNumber: number;
+  sceneTitle: string;
+  sceneDescription: string;
+  optionPrompt: string;
+  options: string[];
 };

@@ -7,7 +7,7 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { onCall, onRequest, Request } from "firebase-functions/v2/https";
+import { onCall, onRequest, Request, HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { OpenAI } from "openai";
 import * as express from "express";
@@ -26,10 +26,15 @@ admin.initializeApp({
 // https://firebase.google.com/docs/functions/typescript
 
 export const execute = onCall({ region: "asia-east1" }, (request) => {
-  logger.info("Hello logs!", { structuredData: true });
-  return {
-    data: "Hello from Firebase!",
-  };
+  const uid = auth?.uid;
+  logger.info(data, { context: uid });
+  if (!(data.type in handlers)) {
+    throw new HttpsError(
+      "invalid-argument",
+      `Function ${data.type} does not exist`,
+    );
+  }
+  return await (handlers as any)[data.type](...data.args, uid);
 });
 const openai = new OpenAI({
   apiKey: "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",

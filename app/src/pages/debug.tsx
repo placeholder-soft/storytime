@@ -1,10 +1,19 @@
 import { ConnectButton } from "@mysten/dapp-kit";
 import { Box, Container, Flex, Heading } from "@radix-ui/themes";
 import { WalletStatus } from "../components/WalletStatus.tsx";
+import { callFunction } from "../firebase.ts";
 
 export default function App() {
   return (
     <>
+      <button
+        onClick={async () => {
+          const result = await callFunction("generateImage", "test");
+          console.log(result);
+        }}
+      >
+        Test Cloudfunction Call
+      </button>
       <Flex
         position="sticky"
         px="4"
