@@ -1,0 +1,3 @@
+[submodule "contracts-avax/lib/openzeppelin-contracts"]
+	path = contracts-avax/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
