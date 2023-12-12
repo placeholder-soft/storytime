@@ -1,73 +1,87 @@
 module storytime::story_nft {
-    use sui::url::{Self, Url};
-    use std::string;
+    use std::string::{utf8, String};
     use sui::object::{Self, ID, UID};
-    use sui::event;
     use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
+    use sui::tx_context::{Self, sender, TxContext};
 
-    /// An example NFT that can be minted by anybody
+    use sui::package;
+    use sui::display;
+
+    struct ChapterNFT has key, store {
+        id: UID,
+        chapter_number: u64,
+        content: vector<u8> 
+    }
+
     struct StoryNFT has key, store {
         id: UID,
         /// Name for the token
-        name: string::String,
-        /// Description of the token
-        description: string::String,
+        name: vector<u8>,
         /// URL for the token
-        url: Url,
-        // TODO: allow custom attributes
+        image_url: vector<u8>,
+
+        chapters: vector<ChapterNFT>,
+
+        auther: address,
     }
 
-    // ===== Events =====
+    // ====
+    /// One-Time-Witness for the module.
+    struct STORY_NFT has drop {}
 
-    struct NFTMinted has copy, drop {
-        // The Object ID of the NFT
-        object_id: ID,
-        // The creator of the NFT
-        creator: address,
-        // The name of the NFT
-        name: string::String,
-    }
+    fun init(otw: STORY_NFT, ctx: &mut TxContext) {
+        let keys = vector[
+            utf8(b"name"),
+            utf8(b"link"),
+            utf8(b"image_url"),
+            utf8(b"description"),
+            utf8(b"project_url"),
+            utf8(b"creator"),
+        ];
 
-    // ===== Public view functions =====
+        let values = vector[
+            // For `name` one can use the `Hero.name` property
+            utf8(b"{name}"),
+            // For `link` one can build a URL using an `id` property
+            utf8(b"https://story.storytime.one/{id}"),
+            // For `image_url` use an IPFS template + `image_url` property.
+            utf8(b"https://image.storytime.one/images/{image_url}"),
+            // Description is static for all `Hero` objects.
+            utf8(b"A true Storytime of the Sui ecosystem!"),
+            // Project URL is usually static
+            utf8(b"https://app.storytime.one"),
+            // Creator field can be any
+            utf8(b"Storytime"),
+        ];
 
-    /// Get the NFT's `name`
-    public fun name(nft: &StoryNFT): &string::String {
-        &nft.name
-    }
+        // Claim the `Publisher` for the package!
+        let publisher = package::claim(otw, ctx);
 
-    /// Get the NFT's `description`
-    public fun description(nft: &StoryNFT): &string::String {
-        &nft.description
-    }
+        // Get a new `Display` object for the `Hero` type.
+        let display = display::new_with_fields<StoryNFT>(
+            &publisher, keys, values, ctx
+        );
 
-    /// Get the NFT's `url`
-    public fun url(nft: &StoryNFT): &Url {
-        &nft.url
+        // Commit first version of `Display` to apply changes.
+        display::update_version(&mut display);
+
+        transfer::public_transfer(publisher, sender(ctx));
+        transfer::public_transfer(display, sender(ctx));
     }
 
     // ===== Entrypoints =====
 
-#[lint_allow(self_transfer)]
-    public fun mint(
-        name: vector<u8>,
-        description: vector<u8>,
-        url: vector<u8>,
-        ctx: &mut TxContext
-    ) {
+    public fun mint(name: vector<u8>, image_url: vector<u8>, ctx: &mut TxContext) {
         let sender = tx_context::sender(ctx);
-        let nft = StoryNFT {
-            id: object::new(ctx),
-            name: string::utf8(name),
-            description: string::utf8(description),
-            url: url::new_unsafe_from_bytes(url)
+        let id = object::new(ctx);
+        let chapters = vector[];
+        let nft = StoryNFT { 
+            id, 
+            name, 
+            image_url, 
+            chapters, 
+            auther: sender 
         };
-
-        event::emit(NFTMinted {
-            object_id: object::id(&nft),
-            creator: sender,
-            name: nft.name,
-        });
 
         transfer::public_transfer(nft, sender);
     }
@@ -78,19 +92,32 @@ module storytime::story_nft {
     ) {
         transfer::public_transfer(nft, recipient)
     }
+}
 
-    /// Update the `description` of `nft` to `new_description`
-    public fun update_description(
-        nft: &mut StoryNFT,
-        new_description: vector<u8>,
-        _: &mut TxContext
-    ) {
-        nft.description = string::utf8(new_description)
-    }
 
-    /// Permanently delete `nft`
-    public fun burn(nft: StoryNFT, _: &mut TxContext) {
-        let StoryNFT { id, name: _, description: _, url: _ } = nft;
-        object::delete(id)
+
+#[test_only]
+module storytime::story_nft_tests {
+    use storytime::story_nft::{Self, StoryNFT};
+    use sui::test_scenario as ts;
+    use sui::transfer;
+    use std::string::{String};
+
+    #[test]
+    fun mint_transfer_update() {
+        let addr1 = @0xA;
+        let addr2 = @0xB;
+        // create the NFT
+        let scenario = ts::begin(addr1);
+        {
+            story_nft::mint(b"test", b"images", ts::ctx(&mut scenario))
+        };
+        // send it from A to B
+        ts::next_tx(&mut scenario, addr1);
+        {
+            let nft = ts::take_from_sender<StoryNFT>(&scenario);
+            transfer::public_transfer(nft, addr2);
+        };
+        ts::end(scenario);
     }
 }

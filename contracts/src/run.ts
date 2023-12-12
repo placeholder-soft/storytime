@@ -19,7 +19,7 @@ async function main() {
   txb.setGasBudget(5_000_000);
 
   txb.moveCall({
-    target: `0xebc67aa17051eaea7c373e5b72c267dcd7267ce060e79479559eee3eaee3f49b::story_nft_display::mint`,
+    target: `0xbb91639293076e9acad4a310d39dfb35ab4974a570a5676f13b66cd83bdf54ce::story_nft::mint`,
     arguments: [
       txb.pure('image 2'),
       txb.pure(
