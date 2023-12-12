@@ -2,10 +2,18 @@ import { useContractWrite, WagmiConfig, createConfig } from "wagmi";
 import { createPublicClient, http } from "viem";
 import { avalancheFuji } from "viem/chains";
 
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { useState } from "react";
+import {
+  Children,
+  cloneElement,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { story_nft_contract } from "./data/story_nft";
+import { addDoc, collection } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 const config = createConfig({
   autoConnect: true,
@@ -15,24 +23,21 @@ const config = createConfig({
   }),
 });
 
-export const EVM = () => {
+export const EVM = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiConfig config={config}>
-      <Profile />
+      <MintButton>{children}</MintButton>
     </WagmiConfig>
   );
 };
 
-function Profile() {
-  const [toAddress, setToAddress] = useState<string>(
-    "0x14dd571A2E2a6df87135C70f1B7Ac4d18af53191",
-  );
-
+function MintButton({ children }: { children: React.ReactNode }) {
   const { address, isConnected } = useAccount();
   const { connect } = useConnect({
     connector: new InjectedConnector(),
   });
-  const { disconnect } = useDisconnect();
+
+  const [isClicked, setIsClicked] = useState(false);
 
   const { data, isLoading, isSuccess, write, isError, error } =
     useContractWrite({
@@ -41,75 +46,67 @@ function Profile() {
       functionName: "mint",
     });
 
-  console.log(data, isLoading, isSuccess, isError, error);
+  const onClick = useCallback(async () => {
+    if (data?.hash) {
+      window.open(`https://cchain.explorer.avax-test.network/tx/${data?.hash}`);
+      return;
+    }
 
-  if (!isConnected) {
-    return <button onClick={() => connect()}>Connect Wallet</button>;
-  }
+    if (!isConnected) {
+      connect();
+      return;
+    }
+    write({
+      args: [address],
+    });
+    setIsClicked(true);
+  }, [data?.hash, isConnected, write, address, connect]);
 
-  return (
-    <div>
-      Connected to {address}
-      <button onClick={() => disconnect()}>Disconnect</button>
-      <div>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: 20,
-            padding: 20,
-          }}
-        >
-          <hr />
-          <div
-            style={{
-              padding: 20,
-              border: "1px solid black",
-            }}
-          >
-            <div>
-              transaction address:
-              <input
-                style={{
-                  width: "100%",
-                }}
-                value={toAddress}
-                onChange={(e) => {
-                  setToAddress(e.target.value);
-                }}
-              />
-            </div>
+  useEffect(() => {
+    if (isConnected && !isClicked) {
+      onClick();
+    }
+  }, [isClicked, isConnected, onClick]);
 
-            <div>transaction hash: {data?.hash}</div>
+  useEffect(() => {
+    if (!isSuccess) {
+      return;
+    }
 
-            <div>
-              transaction status:{" "}
-              {isLoading
-                ? "loading"
-                : isSuccess
-                  ? "success"
-                  : isError
-                    ? "error"
-                    : "idle"}
-            </div>
+    void (async () => {
+      await addDoc(collection(db, "mints"), {
+        chain: "avalanche",
+        network: "fuji",
+        hash: data?.hash,
+        sender: address,
+        owner: address,
+        uid: auth.currentUser?.uid,
+      });
+    })();
+  }, [data, isLoading, isSuccess, isError, error, address]);
 
-            <div>transaction error: {isError ? error?.message : "none"}</div>
-          </div>
-          <div>
-            <button
-              onClick={async () => {
-                console.log(toAddress);
-                write({
-                  args: [toAddress],
-                });
-              }}
-            >
-              execute mint
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const newChildren = Children.map(children, (child) => {
+    const c = child as React.ReactElement;
+    return cloneElement(c, {
+      disabled: isLoading,
+      onClick: async () => {
+        onClick();
+      },
+      style: {
+        ...(isSuccess
+          ? {
+              color: "white",
+              backgroundColor: "green",
+            }
+          : {}),
+      },
+      children: isLoading
+        ? "Loading..."
+        : isSuccess
+          ? "Minted! (Avax)"
+          : c.props.children,
+    });
+  });
+
+  return <>{newChildren}</>;
 }

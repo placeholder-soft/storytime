@@ -7,7 +7,7 @@ import styled from "styled-components";
 import posterImage from "./_/poster.png";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router";
-import { upsertSalt, ZKLoginStore } from "../../components/zklogin.store.tsx";
+import { insertSalt, ZKLoginStore } from "../../components/zklogin.store.tsx";
 import queryString from "query-string";
 import { auth } from "../../firebase.ts";
 
@@ -63,25 +63,15 @@ const LoginButton: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [store, setStore] = useState<ZKLoginStore>(new ZKLoginStore());
+  const store = new ZKLoginStore();
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
       const oauthParams = queryString.parse(location.hash);
-      if (
-        oauthParams &&
-        oauthParams.id_token &&
-        store.info?.id_token !== oauthParams.id_token
-      ) {
-        const salt = await upsertSalt(oauthParams.id_token as string);
-        setStore(
-          new ZKLoginStore({
-            salt,
-            id_token: oauthParams.id_token as string,
-          }),
-        );
+      if (oauthParams && oauthParams.id_token) {
+        await insertSalt(oauthParams.id_token as string);
         setLoading(true);
         const listener = auth.onAuthStateChanged((x) => {
           if (x != null) {
@@ -91,7 +81,7 @@ const LoginButton: FC = () => {
         });
       }
     })();
-  }, [location.hash, navigate, store.info?.id_token]);
+  }, [location.hash, navigate]);
 
   return (
     <StyledStartButton

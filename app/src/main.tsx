@@ -2,6 +2,11 @@
 import * as ReactDOM from "react-dom/client";
 import "@mysten/dapp-kit/dist/index.css";
 import "@radix-ui/themes/styles.css";
+import "@radix-ui/colors/black-alpha.css";
+import "@radix-ui/colors/green.css";
+import "@radix-ui/colors/mauve.css";
+import "@radix-ui/colors/slate.css";
+import "@radix-ui/colors/violet.css";
 // import "./index.css";
 import { getFullnodeUrl } from "@mysten/sui.js/client";
 import {
