@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -9,6 +9,7 @@ import Loader from "../components/Loader";
 import { Project } from "model";
 import { auth, db } from "../firebase.ts";
 import { addDoc, collection } from "firebase/firestore";
+import { splitDesc } from "../modules/story/utils";
 
 const BackgroundImageContainer = styled.div<{ backgroundImageUrl: string }>`
   background-image: url(${(props) => props.backgroundImageUrl});
@@ -106,8 +107,13 @@ const OptionButton = styled.button`
   }
 `;
 
+const Para = styled.p`
+  margin: 4px;
+`;
+
 const Scene = () => {
   const [step, setStep] = useState(0); // note: 0 is description, 1 is options
+  const [descriptions, setDescriptions] = useState<string[]>([]); // html description
   const [loading, setLoading] = useState(false);
   const [dots, setDots] = useState("");
   const {
@@ -147,6 +153,12 @@ const Scene = () => {
       clearInterval(timer);
     };
   }, [dots, loading]);
+
+  useEffect(() => {
+    if (sceneDescription && !descriptions.length) {
+      setDescriptions(splitDesc(sceneDescription));
+    }
+  }, [descriptions, sceneDescription]);
 
   const onOptionClick = (val: string) => {
     dispatch(
@@ -196,7 +208,11 @@ const Scene = () => {
       <BackgroundImageContainer backgroundImageUrl={sceneImage}>
         {step === 0 && (
           <QuoteContainer>
-            <QuoteText>{sceneDescription}</QuoteText>
+            <QuoteText>
+              {descriptions.map((des) => (
+                <Para>{des}</Para>
+              ))}
+            </QuoteText>
             <ButtonContainer>
               <Button
                 onClick={() => {
