@@ -13,18 +13,21 @@ export type CreateCharacterNameAction = Action & {
   data: CreateCharacterNameBody;
 };
 export const createCharacterName = (
-  data: CreateCharacterNameBody
+  data: CreateCharacterNameBody,
 ): CreateCharacterNameAction => ({
   type: CREATE_CHARACTER_NAME,
   data,
 });
 
-type CreateCharacterTypeBody = { characterType: string };
+type CreateCharacterTypeBody = {
+  characterType: string;
+  customCharacterType?: string;
+};
 export type CreateCharacterTypeAction = Action & {
   data: CreateCharacterTypeBody;
 };
 export const createCharacterType = (
-  data: CreateCharacterTypeBody
+  data: CreateCharacterTypeBody,
 ): CreateCharacterTypeAction => ({
   type: CREATE_CHARACTER_TYPE,
   data,
@@ -35,7 +38,7 @@ export type CreateCharacterImageAction = Action & {
   data: CreateCharacterImageBody;
 };
 export const createCharacterImage = (
-  data: CreateCharacterImageBody
+  data: CreateCharacterImageBody,
 ): CreateCharacterImageAction => ({
   type: CREATE_CHARACTER_IMAGE,
   data,
@@ -46,7 +49,7 @@ export type CreateCharacterImageSuccessAction = Action & {
   data: CreateCharacterImageSuccessBody;
 };
 export const createCharacterImageSuccess = (
-  data: CreateCharacterImageSuccessBody
+  data: CreateCharacterImageSuccessBody,
 ) => ({
   type: CREATE_CHARACTER_IMAGE_SUCCESS,
   data,

@@ -9,11 +9,13 @@ import {
 export type CharacterState = {
   characterName: string;
   characterType: string;
+  customCharacterType: string;
   characterImage?: Blob;
 };
 const initialState: CharacterState = {
   characterName: "",
   characterType: "",
+  customCharacterType: "",
   characterImage: undefined,
 };
 
@@ -25,8 +27,8 @@ const characterReducer = (state = initialState, action: CharacterAction) => {
       return { ...state, characterName };
     }
     case CREATE_CHARACTER_TYPE: {
-      const { characterType } = action.data;
-      return { ...state, characterType };
+      const { characterType, customCharacterType } = action.data;
+      return { ...state, characterType, customCharacterType };
     }
     case CREATE_CHARACTER_IMAGE_SUCCESS: {
       const { blob, characterType } = action.data;
