@@ -1,5 +1,10 @@
 import dedent from "dedent";
 import { RawScene, Scene } from "../../types/story";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeStringify from "rehype-stringify";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { unified } from "unified";
 
 function escapeJsonBug(content: string) {
   // next line break the json parser
@@ -134,4 +139,11 @@ ${currentSceneStr}
 
 Generate image base on current scene while ensuring the options are in the scene. Ensure the character is accurate to the description and use the descriptions defined in the style, and setting section
   `;
+};
+
+export const splitDesc = (content: string) => {
+  const [desc, options] = content.split(":1.");
+  const [option1, otherOptions] = options.split("2. ");
+  const [option2, option3] = otherOptions.split("3. ");
+  return [`${desc}:`, `1.${option1}`, `2. ${option2}`, `3. ${option3}`];
 };
