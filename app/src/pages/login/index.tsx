@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../../firebase.ts";
 import { Navigate } from "react-router";
+import { Button } from "@radix-ui/themes";
 
 export const StyledPageContainer = styled(PageContainer)`
   display: flex;
@@ -17,7 +18,7 @@ export const StyledPageContainer = styled(PageContainer)`
   width: 100vw;
 `;
 
-const StyledCard = styled.div`
+export const StyledCard = styled.div`
   width: 353px;
   height: 433px;
   border-radius: 10px;
@@ -30,7 +31,6 @@ const StyledCard = styled.div`
 
 const StyledCardTitle = styled.div`
   color: #000;
-  font-family: N27;
   font-size: 20px;
   line-height: 24px;
   text-align: center;
@@ -39,7 +39,6 @@ const StyledCardTitle = styled.div`
 const StyledDescritionTitle = styled.p`
   color: #000;
   text-align: center;
-  font-family: Inter Tight;
   font-size: 30px;
   font-weight: 500;
   line-height: 60px;
@@ -49,20 +48,18 @@ const StyledDescritionTitle = styled.p`
 const StyledDescription = styled.p`
   color: #000;
   text-align: center;
-  font-family: Inter Tight;
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
   width: 237px;
 `;
 
-const StyleSubButton = styled.button`
+export const StyledSubButton = styled(Button)`
   color: #fff;
   font-weight: 600;
   text-align: center;
   width: 283px;
   padding: 10px 25px;
-  gap: 10px;
   border-radius: 10px;
   background: #000;
   margin-top: 80px;
@@ -93,14 +90,14 @@ const LoginPage: FC = () => {
             You’ve got two images, you need two words. Start working out that
             big brain
           </StyledDescription>
-          <StyleSubButton
+          <StyledSubButton
             onClick={async () => {
               const provider = new GoogleAuthProvider();
               await signInWithPopup(auth, provider);
             }}
           >
             Continue with google
-          </StyleSubButton>
+          </StyledSubButton>
         </StyledCard>
       </StyledPageContainer>
     </>
