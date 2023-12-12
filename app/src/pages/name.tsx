@@ -71,7 +71,7 @@ const Name = () => {
         <StyledInputRoot>
           <StyledInput
             value={characterName}
-            onChange={(e) => setCharacterName(e.target.value)}
+            onChange={(e: any) => setCharacterName(e.target.value)}
             placeholder="ENTER CHARACTER NAME"
           />
         </StyledInputRoot>

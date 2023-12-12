@@ -10,7 +10,7 @@ export function protectedRoute<T extends { user: User }>(component: FC<T>) {
       return auth.onAuthStateChanged((user) => setUser(user));
     }, []);
     if (user === undefined) {
-      return <div>Loading...</div>;
+      return null;
     }
     if (user == null) {
       return <Navigate to="/login" />;

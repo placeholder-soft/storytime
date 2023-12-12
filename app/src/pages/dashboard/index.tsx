@@ -15,7 +15,7 @@ import {
 import styled from "styled-components";
 import demoImage from "./_/demo.png";
 import { Link } from "react-router-dom";
-import {Button} from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
 
 export const StyledContentContainer = styled(ContentContainer)`
   display: flex;
@@ -78,7 +78,7 @@ export const StyledTitleContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
+`;
 
 export const StyledStoryTitle = styled.p`
   text-align: left;
@@ -179,7 +179,7 @@ const DashboardPage = protectedRoute(({ user }: { user: User }) => {
     });
   }, [user.uid]);
   if (projects == null) {
-    return <div>Loading...</div>;
+    return null;
   }
   if (projects.length === 0) {
     return (
@@ -190,7 +190,9 @@ const DashboardPage = protectedRoute(({ user }: { user: User }) => {
           </StyledTitleContainer>
           <StyledEmptyCard>
             <StyledEmptyText>Create your first story</StyledEmptyText>
-            <StyledCreateButton>Create</StyledCreateButton>
+            <Link to="/name">
+              <StyledCreateButton>Create</StyledCreateButton>
+            </Link>
           </StyledEmptyCard>
         </StyledContentContainer>
       </PageContainer>

@@ -65,6 +65,8 @@ const LoginButton: FC = () => {
 
   const [store, setStore] = useState<ZKLoginStore>(new ZKLoginStore());
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     (async () => {
       const oauthParams = queryString.parse(location.hash);
@@ -80,6 +82,7 @@ const LoginButton: FC = () => {
             id_token: oauthParams.id_token as string,
           }),
         );
+        setLoading(true);
         const listener = auth.onAuthStateChanged((x) => {
           if (x != null) {
             listener();
@@ -100,7 +103,7 @@ const LoginButton: FC = () => {
         }
       }}
     >
-      Get started
+      {loading ? "Loading..." : "Continue with Google"}
     </StyledStartButton>
   );
 };
