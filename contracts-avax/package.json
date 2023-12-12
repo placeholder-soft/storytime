@@ -1,0 +1,31 @@
+{
+  "name": "contracts-avax",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "zitao xiong",
+  "license": "MIT",
+  "packageManager": "yarn@1.22.19",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-foundry": "^1.0.2",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^1.0.0",
+    "@typechain/ethers-v6": "^0.4.0",
+    "@typechain/hardhat": "^8.0.0",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": ">=9.1.0",
+    "@types/node": "^20.4.5",
+    "chai": "^4.2.0",
+    "hardhat": "^2.17.1",
+    "hardhat-gas-reporter": "^1.0.8",
+    "prettier": "^2.8.8",
+    "prettier-plugin-organize-imports": "^3.2.2",
+    "solhint": "^3.5.1",
+    "solidity-coverage": "^0.8.1",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.2.0",
+    "typescript": "^5.1.6"
+  }
+}

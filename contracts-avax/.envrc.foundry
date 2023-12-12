@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+PATH_add tools/foundry/scripts
+PATH_add tools/foundry/bin
+
+export FOUNDRY_DIR="$PWD/tools/foundry"

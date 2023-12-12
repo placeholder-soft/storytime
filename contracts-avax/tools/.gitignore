@@ -1,0 +1,4 @@
+foundry/bin/**/*
+!foundry/bin/.gitkeep
+foundry/share/**/*
+!foundry/share/.gitkeep
