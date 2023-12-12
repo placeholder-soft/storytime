@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { Heading, TextField, Button } from "@radix-ui/themes";
+import { TextField } from "@radix-ui/themes";
 import { createCharacterName } from "../modules/character/actions";
 import { Header, PageContainer } from "../components/Layout/Layout";
+import Button from "../components/Button";
 
 const ContentContainer = styled.div`
   display: flex;
