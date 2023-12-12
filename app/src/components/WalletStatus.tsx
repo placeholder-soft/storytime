@@ -3,6 +3,7 @@ import { Container, Flex, Heading, Text } from "@radix-ui/themes";
 import { OwnedObjects } from "./OwnedObjects";
 import { Mint } from "./Mint";
 import { Query } from "./Query";
+import { ZKLogin } from "./ZKLogin";
 
 export function WalletStatus() {
   const account = useCurrentAccount();
@@ -23,6 +24,8 @@ export function WalletStatus() {
       <OwnedObjects />
       <h1>Mint</h1>
       <Mint />
+      <h1>zklogin</h1>
+      <ZKLogin />
       <h1>Query</h1>
       <Query />
     </Container>

@@ -67,3 +67,5 @@ node_modules/
 
 .envrc.override
 build
+
+.gitconfig
