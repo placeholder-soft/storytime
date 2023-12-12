@@ -209,7 +209,9 @@ const DashboardPage = protectedRoute(({ user }: { user: User }) => {
       <StyledContentContainer>
         <StyledTitleContainer>
           <StyledStoryTitle>Your Stories</StyledStoryTitle>
-          <StyledSubButton>Create New Story</StyledSubButton>
+          <Link to="/name">
+            <StyledSubButton>Create New Story</StyledSubButton>
+          </Link>
         </StyledTitleContainer>
         <StyledStoryContainer>
           {[
