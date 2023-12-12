@@ -5,6 +5,7 @@ import ThemeProvider from "./styles/ThemeProvider";
 import theme from "./styles/theme";
 import GlobalStyles from "./styles/GlobalStyles";
 import store from "./modules";
+import { Suspense } from "react";
 
 const Content = () => {
   return useRoutes(routes);
@@ -15,9 +16,11 @@ export default function App() {
     <Provider store={store}>
       <GlobalStyles />
       <ThemeProvider theme={theme}>
-        <Router>
-          <Content />
-        </Router>
+        <Suspense fallback={<p>Loading...</p>}>
+          <Router>
+            <Content />
+          </Router>
+        </Suspense>
       </ThemeProvider>
     </Provider>
   );

@@ -1,6 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import { characterNameSelector } from "../../modules/character/selectors";
-import { characterTypeSelector } from "../../modules/character/selectors";
+import {
+  characterNameSelector,
+  characterTypeSelector,
+  customCharacterTypeSelector,
+} from "../../modules/character/selectors";
 import { initStory } from "../../modules/story/actions";
 import { getStoryTemplate } from "../../utils";
 import { useEffect } from "react";
@@ -13,7 +16,12 @@ import { PageContainer, Header } from "../../components/Layout/Layout";
 const Story: React.FC = () => {
   const characterName = useSelector(characterNameSelector);
   const characterType = useSelector(characterTypeSelector);
-  const template = getStoryTemplate({ characterName, characterType });
+  const customCharacterType = useSelector(customCharacterTypeSelector);
+  const template = getStoryTemplate({
+    characterName,
+    characterType:
+      characterType === "Custom" ? customCharacterType : characterType,
+  });
   const dispatch = useDispatch();
   const { title, currentSceneIndex } = useSelector(storySelector);
 

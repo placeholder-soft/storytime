@@ -8,7 +8,10 @@ import {
   characterImageSelector,
   characterTypeSelector,
 } from "../../modules/character/selectors";
-import { createCharacterImage } from "../../modules/character/actions";
+import {
+  createCharacterImage,
+  createCharacterType,
+} from "../../modules/character/actions";
 import { Header } from "../../components/Layout/Layout";
 import { Button, DropdownMenu, TextField } from "@radix-ui/themes";
 import { CaretDownIcon } from "@radix-ui/react-icons";
@@ -151,23 +154,33 @@ const CanvasPage = () => {
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
                 <StyledTriggerButton variant="soft">
-                  Options
+                  {characterType}
                   <CaretDownIcon width={24} height={24} />
                 </StyledTriggerButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
                 {types.map((type) => (
-                  <StyledDropdownMenuItem>{type.name}</StyledDropdownMenuItem>
+                  <StyledDropdownMenuItem
+                    onSelect={() => {
+                      dispatch(
+                        createCharacterType({ characterType: type.name }),
+                      );
+                    }}
+                  >
+                    {type.name}
+                  </StyledDropdownMenuItem>
                 ))}
               </DropdownMenu.Content>
             </DropdownMenu.Root>
-            <StyledInputRoot>
-              <StyledInput
-                placeholder="ENTER Custom CHARACTER"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-              />
-            </StyledInputRoot>
+            {characterType === "Custom" && (
+              <StyledInputRoot>
+                <StyledInput
+                  placeholder="ENTER Custom CHARACTER"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                />
+              </StyledInputRoot>
+            )}
           </StyledFooterToolContainer>
         </StyledCanvasContainer>
         <PreviewContainer>

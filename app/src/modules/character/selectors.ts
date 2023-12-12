@@ -23,3 +23,8 @@ export const characterTypeSelector = createSelector(
   [getCharacterBase],
   ({ characterType }) => characterType,
 );
+
+export const customCharacterTypeSelector = createSelector(
+  [getCharacterBase],
+  ({ customCharacterType }) => customCharacterType,
+);
