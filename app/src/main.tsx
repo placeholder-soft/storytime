@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import ReactDOM from "react-dom/client";
 import "@mysten/dapp-kit/dist/index.css";
 import "@radix-ui/themes/styles.css";
@@ -23,15 +23,16 @@ const { networkConfig } = createNetworkConfig({
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Theme appearance="dark">
-      <QueryClientProvider client={queryClient}>
-        <SuiClientProvider networks={networkConfig} defaultNetwork="devnet">
-          <WalletProvider autoConnect>
-            <App />
-          </WalletProvider>
-        </SuiClientProvider>
-      </QueryClientProvider>
-    </Theme>
-  </React.StrictMode>,
+  // NOTE: remove StrictMode to prevent double request.
+  // <React.StrictMode>
+  <Theme appearance="dark">
+    <QueryClientProvider client={queryClient}>
+      <SuiClientProvider networks={networkConfig} defaultNetwork="devnet">
+        <WalletProvider autoConnect>
+          <App />
+        </WalletProvider>
+      </SuiClientProvider>
+    </QueryClientProvider>
+  </Theme>
+  // </React.StrictMode>
 );
