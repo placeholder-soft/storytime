@@ -7,8 +7,11 @@ const BackgroundImageContainer = styled.div<{ backgroundImageUrl: string }>`
   background-image: url(${(props) => props.backgroundImageUrl});
   background-size: cover;
   background-position: center;
-  height: 100vh; // Full height of the viewport
-  width: 100%; // Full width of the viewport
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
   align-items: center; // Center the content vertically and horizontally
@@ -34,10 +37,6 @@ const Cover = () => {
     <BackgroundImageContainer backgroundImageUrl={coverImage} onClick={next}>
       <Heading>{title}</Heading>
     </BackgroundImageContainer>
-    // <Container onClick={next}>
-    //   <Heading>{title}</Heading>
-    //   <img src={coverImage} />
-    // </Container>
   );
 };
 

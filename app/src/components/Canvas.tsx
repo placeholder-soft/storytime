@@ -1,16 +1,17 @@
-import { useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { fabric } from "fabric";
+import { Button } from "@radix-ui/themes";
+import EditIcon from "./_/edit.svg?react";
+import EraserIcon from "./_/eraser.svg?react";
 
-const Container = styled.div`
-  width: 100%;
-  flex: 1;
-  border: 1px solid red;
+const StyledCanvasContainer = styled.div`
+  width: 50vw;
 `;
 const RawCanvas = styled.canvas`
-  border: 1px solid black;
-  width: 100% !important;
-  height: auto% !important;
+  width: 50vw !important;
+  height: 100vh !important;
+  flex: 1;
 `;
 
 const dataURLToBlob = (dataURL: string) => {
@@ -30,9 +31,30 @@ type SketchCanvas = {
   onUpdate: (val: Blob) => void;
 };
 
-const SketchCanvas: React.FC<SketchCanvas> = ({ onUpdate }) => {
+const ToolContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  position: absolute;
+  left: 24px;
+  z-index: 10;
+  top: 50%;
+  transform: translateY(-50%);
+`;
+
+const StyledToolButton = styled(Button)<{ active: boolean }>`
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  background: ${(p) => (p.active ? "#828282" : "#000")};
+  cursor: pointer;
+`;
+
+const SketchCanvas: FC<SketchCanvas> = ({ onUpdate }) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef<fabric.Canvas>();
+  const onUpdateRef = useRef(onUpdate);
+  onUpdateRef.current = onUpdate;
 
   useEffect(() => {
     // Initialize the Fabric canvas
@@ -40,16 +62,19 @@ const SketchCanvas: React.FC<SketchCanvas> = ({ onUpdate }) => {
       isDrawingMode: true,
     });
 
+    fabricCanvasRef.current?.setHeight(window.innerHeight);
+    fabricCanvasRef.current?.setWidth(window.innerWidth / 2);
+
     // Configure drawing brush
     fabricCanvasRef.current.freeDrawingBrush.color = "black";
-    fabricCanvasRef.current.freeDrawingBrush.width = 5;
+    fabricCanvasRef.current.freeDrawingBrush.width = 10;
 
     fabricCanvasRef.current.on("mouse:up", () => {
       fabricCanvasRef.current?.renderAll();
       const dataURL =
         fabricCanvasRef.current?.toDataURL({ format: "png" }) || "";
       const blob = dataURLToBlob(dataURL);
-      onUpdate(blob);
+      onUpdateRef.current(blob);
     });
 
     return () => {
@@ -58,10 +83,38 @@ const SketchCanvas: React.FC<SketchCanvas> = ({ onUpdate }) => {
     };
   }, []);
 
+  const [mode, setMode] = useState<"draw" | "erase">("draw");
+
   return (
-    <Container>
-      <RawCanvas width={600} height={600} ref={canvasRef} />
-    </Container>
+    <StyledCanvasContainer>
+      <RawCanvas ref={canvasRef} />
+      <ToolContainer>
+        <StyledToolButton
+          active={mode === "draw"}
+          onClick={() => {
+            if (fabricCanvasRef.current) {
+              fabricCanvasRef.current.freeDrawingBrush.color = "black";
+              fabricCanvasRef.current.freeDrawingBrush.width = 10;
+            }
+            setMode("draw");
+          }}
+        >
+          <EditIcon />
+        </StyledToolButton>
+        <StyledToolButton
+          active={mode === "erase"}
+          onClick={() => {
+            if (fabricCanvasRef.current) {
+              fabricCanvasRef.current.freeDrawingBrush.color = "white";
+              fabricCanvasRef.current.freeDrawingBrush.width = 40;
+            }
+            setMode("erase");
+          }}
+        >
+          <EraserIcon />
+        </StyledToolButton>
+      </ToolContainer>
+    </StyledCanvasContainer>
   );
 };
 

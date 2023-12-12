@@ -5,12 +5,10 @@ import { initStory } from "../../modules/story/actions";
 import { getStoryTemplate } from "../../utils";
 import { useEffect } from "react";
 import { StoryProgressPromptRole } from "../../types/story";
-import {
-  storySelector,
-  storyProgressSelector,
-} from "../../modules/story/selectors";
+import { storySelector } from "../../modules/story/selectors";
 import Scene from "../../components/Scene";
 import Cover from "../../components/Cover";
+import { PageContainer, Header } from "../../components/Layout/Layout";
 
 const Story: React.FC = () => {
   const characterName = useSelector(characterNameSelector);
@@ -18,8 +16,6 @@ const Story: React.FC = () => {
   const template = getStoryTemplate({ characterName, characterType });
   const dispatch = useDispatch();
   const { title, currentSceneIndex } = useSelector(storySelector);
-  const storyProgress = useSelector(storyProgressSelector);
-  console.log(storyProgress);
 
   useEffect(() => {
     if (!title) {
@@ -29,12 +25,17 @@ const Story: React.FC = () => {
             role: StoryProgressPromptRole.System,
             content: template,
           },
-        })
+        }),
       );
     }
   }, [title]);
 
-  return currentSceneIndex > 0 ? <Scene /> : <Cover />;
+  return (
+    <PageContainer>
+      <Header />
+      {currentSceneIndex > 0 ? <Scene /> : <Cover />}
+    </PageContainer>
+  );
 };
 
 export default Story;

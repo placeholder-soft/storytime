@@ -9,12 +9,12 @@ import {
 export type CharacterState = {
   characterName: string;
   characterType: string;
-  characterImage: Blob;
+  characterImage?: Blob;
 };
 const initialState: CharacterState = {
   characterName: "",
   characterType: "",
-  characterImage: new Blob(),
+  characterImage: undefined,
 };
 
 // Reducer

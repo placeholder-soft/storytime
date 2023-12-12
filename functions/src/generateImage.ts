@@ -61,6 +61,13 @@ export const generateImage: CloudFunctionsTypeWithUid["generateImage"] = async (
             })
             .then((signedUrls) => {
               // signedUrls[0] contains the file's public URL
+              console.log(`[${uid}]generated image using prompt: 
+${prompt}  
+image_url: 
+${signedUrls[0]}
+revised_prompt:
+${revised_prompt ?? ""}
+  `);
               resolve({
                 image_url: signedUrls[0],
                 revised_prompt: revised_prompt ?? "",

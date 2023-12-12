@@ -13,7 +13,7 @@ export function protectedRoute<T extends { user: User }>(component: FC<T>) {
       return null;
     }
     if (user == null) {
-      return <Navigate to="/login" />;
+      return <Navigate to="/home" />;
     }
     return createElement(component, {
       ...props,

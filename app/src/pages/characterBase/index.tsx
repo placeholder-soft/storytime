@@ -3,39 +3,13 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { createCharacterType } from "../../modules/character/actions";
-import { Header, PageContainer } from "../../components/Layout/Layout";
+import { PageContainer } from "../../components/Layout/Layout";
 import Button from "../../components/Button";
-import character1 from "./_/1.png";
-import character2 from "./_/2.png";
-import character3 from "./_/3.png";
-
-const CHARACTER_BASE = [
-  {
-    title: "Bear",
-    image: character1,
-  },
-  {
-    title: "Human",
-    image: character2,
-  },
-  {
-    title: "Dog",
-    image: character3,
-  },
-];
-
-const ContentContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100vh;
-`;
+import { StyledContentContainer } from "../dashboard";
+import { CHARACTER_BASE } from "../../shared/characterTypes";
 
 const StyledTitle = styled.h1`
   color: #000;
-  font-family: Inter Tight;
   font-size: 50px;
   font-style: normal;
   font-weight: 600;
@@ -72,12 +46,18 @@ const StyledBaseItemTitle = styled.div`
   color: #000;
   font-size: 30px;
   font-weight: 500;
-  line-height: 60px;
 `;
 
 const StyledBaseItemImage = styled.img`
   max-width: 300px;
   border-radius: 5px;
+`;
+
+const StyledBaseItemContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 35px;
 `;
 
 const BaseItem: React.FC<{
@@ -87,12 +67,12 @@ const BaseItem: React.FC<{
   onClick: () => void;
 }> = (props) => {
   return (
-    <div>
+    <StyledBaseItemContainer>
       <StyledBaseItem $selected={props.selected} onClick={props.onClick}>
         <StyledBaseItemImage src={props.image} alt="" />
       </StyledBaseItem>
       <StyledBaseItemTitle>{props.title}</StyledBaseItemTitle>
-    </div>
+    </StyledBaseItemContainer>
   );
 };
 
@@ -103,8 +83,7 @@ const CharacterBase = () => {
 
   return (
     <PageContainer>
-      <Header />
-      <ContentContainer>
+      <StyledContentContainer>
         <StyledTitle>Select Character Base</StyledTitle>
         <StyledBaseContainer>
           {CHARACTER_BASE.map((c) => (
@@ -126,7 +105,7 @@ const CharacterBase = () => {
         >
           Select Character
         </Button>
-      </ContentContainer>
+      </StyledContentContainer>
     </PageContainer>
   );
 };
