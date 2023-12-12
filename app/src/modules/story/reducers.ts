@@ -14,14 +14,16 @@ export type StoryState = {
   storyProgressPrompts: StoryProgress[];
   title: string;
   introduction: string;
+  coverImage: string;
   currentSceneIndex: number;
   scenes: Scene[];
 };
 const initialState: StoryState = {
-  currentSceneIndex: 0,
   storyProgressPrompts: [],
   title: "",
   introduction: "",
+  coverImage: "",
+  currentSceneIndex: 0,
   scenes: [],
 };
 
@@ -43,15 +45,16 @@ const storyReducer = (state = initialState, action: StoryAction) => {
       };
     }
     case INIT_STORY_SUCCESS: {
-      const { progress } = action.data;
+      const { progress, coverImage, sceneImage } = action.data;
       const { title, introduction, scene } = parseStoryGuideline(
-        progress.content
+        progress.content,
       );
       return {
         ...state,
         title,
         introduction,
-        scenes: [...state.scenes, scene],
+        coverImage,
+        scenes: [...state.scenes, { ...scene, sceneImage }],
         storyProgressPrompts: [...state.storyProgressPrompts, progress],
       };
     }
@@ -65,11 +68,11 @@ const storyReducer = (state = initialState, action: StoryAction) => {
     }
     case UPDATE_STORY_SUCCESS: {
       // when user received resp from open AI, it includes assistant prompt
-      const { progress } = action.data;
+      const { progress, sceneImage } = action.data;
       const { scene } = parseStoryGuideline(progress.content);
       return {
         ...state,
-        scenes: [...state.scenes, scene],
+        scenes: [...state.scenes, { ...scene, sceneImage }],
         storyProgressPrompts: [...state.storyProgressPrompts, progress],
       };
     }

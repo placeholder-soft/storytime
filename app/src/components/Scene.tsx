@@ -17,7 +17,7 @@ const Cover = () => {
     dispatch(
       updateStory({
         message: { role: StoryProgressPromptRole.User, content: val },
-      })
+      }),
     );
   };
 
