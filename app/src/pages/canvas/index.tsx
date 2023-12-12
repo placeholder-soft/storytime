@@ -1,5 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -12,8 +12,6 @@ import { createCharacterImage } from "../../modules/character/actions";
 import demoImg from "../characterBase/_/1.png";
 import { Header } from "../../components/Layout/Layout";
 import { Button, DropdownMenu, TextField } from "@radix-ui/themes";
-import EditIcon from "./_/edit.svg?react";
-import EraserIcon from "./_/eraser.svg?react";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 
 const PreviewContainer = styled.div`
@@ -26,8 +24,8 @@ const PreviewImage = styled.img`
   width: 100%;
 `;
 
-const Preview: React.FC<{ data: Blob }> = ({ data }) => {
-  return <PreviewImage src={demoImg} alt="" />;
+const Preview: FC<{ data: Blob }> = ({ data }) => {
+  return <PreviewImage src={URL.createObjectURL(data)} alt="" />;
 };
 
 export const StyledSelectButton = styled(Button)`
@@ -54,32 +52,6 @@ const ContentContainer = styled.div`
 
 const StyledCanvasContainer = styled.div`
   position: relative;
-`;
-
-const ToolContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  position: absolute;
-  left: 24px;
-  z-index: 10;
-  top: 50%;
-  transform: translateY(-50%);
-`;
-
-const StyledEditButton = styled(Button)`
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  background: #000;
-  cursor: pointer;
-`;
-const StyledEraserButton = styled(Button)`
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  background: #828282;
-  cursor: pointer;
 `;
 
 const StyledInputRoot = styled(TextField.Root)`
@@ -115,7 +87,7 @@ const StyledTriggerButton = styled(Button)`
 
 const StyledDropdownMenuItem = styled(DropdownMenu.Item)`
   width: 205px;
-`
+`;
 
 const StyledFooterToolContainer = styled.div`
   display: flex;
@@ -170,14 +142,6 @@ const CanvasPage = () => {
       <ContentContainer>
         <StyledCanvasContainer>
           <Canvas onUpdate={(val) => setSketchBlob(val)} />
-          <ToolContainer>
-            <StyledEditButton>
-              <EditIcon />
-            </StyledEditButton>
-            <StyledEraserButton>
-              <EraserIcon />
-            </StyledEraserButton>
-          </ToolContainer>
           <StyledFooterToolContainer>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
