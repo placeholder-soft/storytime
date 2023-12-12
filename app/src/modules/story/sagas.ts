@@ -9,8 +9,13 @@ import {
   updateStorySuccess,
   toScene,
 } from "./actions";
-import { storyProgressSelector, storySelector } from "./selectors";
-import { parseScene, parseStoryGuideline } from "./utils";
+import { Scene } from "../../types/story";
+import {
+  currentSceneSelector,
+  storyProgressSelector,
+  storySelector,
+} from "./selectors";
+import { parseScene, parseStoryGuideline, makeImagePrompt } from "./utils";
 import { callFunction } from "../../firebase.ts";
 
 // Sample worker saga
@@ -36,21 +41,34 @@ function* initStory(action: InitStoryAction) {
       },
     );
     const progress = data.choices?.[0].message as StoryProgress;
-    const { introduction, scene } = parseStoryGuideline(progress.content);
-    const { image_url } = (yield call(
+    const { character, setting, introduction, scene } = parseStoryGuideline(
+      progress.content,
+    );
+    // TODO use cover prompt
+    const { image_url: coverImage } = (yield call(
       callFunction,
       "generateImage",
-      introduction,
+      makeImagePrompt({
+        character,
+        setting,
+        introduction,
+        currentScene: scene,
+      }),
     )) as { image_url: string; revised_prompt: string };
     const { image_url: scene1Image } = (yield call(
       callFunction,
       "generateImage",
-      scene.sceneDescription,
+      makeImagePrompt({
+        character,
+        setting,
+        introduction,
+        currentScene: scene,
+      }),
     )) as { image_url: string; revised_prompt: string };
     yield put(
       initStorySuccess({
         progress,
-        coverImage: image_url,
+        coverImage,
         sceneImage: scene1Image,
       }),
     );
@@ -84,11 +102,19 @@ function* updateStory(action: InitStoryAction) {
       },
     );
     const progress = data.choices?.[0].message as StoryProgress;
-    const { sceneDescription } = parseScene(progress.content);
+    const currentScene = parseScene(progress.content);
+    const { character, setting, introduction } = yield select(storySelector);
+    const pastScene = (yield select(currentSceneSelector)) as Scene;
     const { image_url } = (yield call(
       callFunction,
       "generateImage",
-      sceneDescription,
+      makeImagePrompt({
+        character,
+        setting,
+        introduction,
+        pastScene,
+        currentScene,
+      }),
     )) as { image_url: string; revised_prompt: string };
     yield put(updateStorySuccess({ progress, sceneImage: image_url }));
   } catch (e) {
