@@ -199,7 +199,7 @@ const Scene = () => {
       name: wholeStory.title,
       createdAt: new Date().getTime(),
       minted: false,
-      title: "My Story",
+      title: wholeStory.title,
       introduction: wholeStory.introduction,
       coverImage: wholeStory.coverImage,
       rawPrompts: wholeStory.storyProgressPrompts,

@@ -139,8 +139,8 @@ Generate image base on current scene while ensuring the options are in the scene
 };
 
 export const splitDesc = (content: string) => {
-  const [desc, options] = content.split(":1.");
+  const [desc, options] = content.split("1.");
   const [option1, otherOptions] = options.split("2. ");
   const [option2, option3] = otherOptions.split("3. ");
-  return [`${desc}:`, `1.${option1}`, `2. ${option2}`, `3. ${option3}`];
+  return [`${desc}`, `1.${option1}`, `2. ${option2}`, `3. ${option3}`];
 };
