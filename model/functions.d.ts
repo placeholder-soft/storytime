@@ -1,3 +1,3 @@
 export type CloudFunctionsType = {
-  generateImage(prompt: string): Promise<{ url: string; finalPrompt: string }>;
+  generateImage(prompt: string): Promise<{ image_url: string, revised_prompt: string }>;
 };
