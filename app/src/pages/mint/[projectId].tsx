@@ -95,8 +95,8 @@ const MinStoryPage: FC = () => {
                 `}
               </StyledDescription>
               <StyledCreateButtonContainer>
-                <SuiMintButton />
-                <EVM>
+                <SuiMintButton projectId={projectId} />
+                <EVM projectId={projectId}>
                   <StyledCreateButton>Mint Story (Avax)</StyledCreateButton>
                 </EVM>
               </StyledCreateButtonContainer>
@@ -108,7 +108,7 @@ const MinStoryPage: FC = () => {
   );
 };
 
-const SuiMintButton = () => {
+const SuiMintButton = ({ projectId }: { projectId: string }) => {
   const store = useMemo(() => new ZKLoginStore(), []);
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState<string>("");
@@ -153,7 +153,7 @@ const SuiMintButton = () => {
         "gaslessMint",
         store.client.userAddress,
         "The Mysterious Map",
-        "bb8018b7-4b6a-4841-a0ea-8e642b56a0ca",
+        projectId,
       );
 
       await addDoc(collection(db, "mints"), {
@@ -162,7 +162,9 @@ const SuiMintButton = () => {
         object_id: res.objectId,
         sender: store.client.userAddress,
         owner: store.client.userAddress,
+        project_id: projectId,
         uid: auth.currentUser?.uid,
+        created_at: new Date(),
       });
 
       setUrl(`https://suiexplorer.com/object/${res.objectId}?network=devnet`);

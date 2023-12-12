@@ -23,15 +23,27 @@ const config = createConfig({
   }),
 });
 
-export const EVM = ({ children }: { children: React.ReactNode }) => {
+export const EVM = ({
+  children,
+  projectId,
+}: {
+  projectId: string;
+  children: React.ReactNode;
+}) => {
   return (
     <WagmiConfig config={config}>
-      <MintButton>{children}</MintButton>
+      <MintButton projectId={projectId}>{children}</MintButton>
     </WagmiConfig>
   );
 };
 
-function MintButton({ children }: { children: React.ReactNode }) {
+function MintButton({
+  children,
+  projectId,
+}: {
+  children: React.ReactNode;
+  projectId: string;
+}) {
   const { address, isConnected } = useAccount();
   const { connect } = useConnect({
     connector: new InjectedConnector(),
@@ -80,10 +92,12 @@ function MintButton({ children }: { children: React.ReactNode }) {
         hash: data?.hash,
         sender: address,
         owner: address,
+        project_id: projectId,
         uid: auth.currentUser?.uid,
+        created_at: new Date(),
       });
     })();
-  }, [data, isLoading, isSuccess, isError, error, address]);
+  }, [data, isLoading, isSuccess, isError, error, address, projectId]);
 
   const newChildren = Children.map(children, (child) => {
     const c = child as React.ReactElement;
