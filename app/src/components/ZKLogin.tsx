@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { ZKLoginStore, client, insertSalt, suiMint } from "./zklogin.store";
+import {
+  ZKLoginStore,
+  client,
+  getSalt,
+  insertSalt,
+  suiMint,
+} from "./zklogin.store";
 import queryString from "query-string";
 import { useLocation, useNavigate } from "react-router";
 import { useSuiClientQuery } from "@mysten/dapp-kit";
@@ -8,9 +14,13 @@ import * as dn from "dnum-cjs";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { auth } from "../firebase";
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const ZKLogin = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [userAddress, setUserAddress] = useState<string>();
 
   const [address, setAddress] = useState<string>(
     "0xedecedb35529bcbfb7edd620634b748d15e3af0c9734dd520b3d275017213b96",
@@ -35,9 +45,24 @@ export const ZKLogin = () => {
           salt,
           id_token: oauthParams.id_token as string,
         });
+        return;
       }
     })();
   }, [location.hash, store, store.client?.id_token]);
+
+  useEffect(() => {
+    void (async () => {
+      await sleep(2000);
+      const salt = await getSalt();
+      if (store.initialized && salt && store.client?.salt !== salt) {
+        store.initializeClient({
+          salt: salt,
+          id_token: window.localStorage.getItem("id_token") ?? "",
+        });
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.initialized, auth.currentUser]);
 
   const { data: addressBalance } = useSuiClientQuery(
     "getBalance",
@@ -56,7 +81,7 @@ export const ZKLogin = () => {
         <button
           style={{ marginRight: 20 }}
           onClick={() => {
-            navigate(`/debug?t=${Math.random()}`);
+            setUserAddress(store.client?.userAddress);
           }}
         >
           rerender
@@ -64,6 +89,7 @@ export const ZKLogin = () => {
         <button
           onClick={() => {
             auth.signOut();
+            setUserAddress(undefined);
             window.localStorage.removeItem("id_token");
             store.resetStorage();
             navigate(`/debug`);
@@ -72,7 +98,7 @@ export const ZKLogin = () => {
           reset config
         </button>
       </div>
-      <div>userAddress: {store.client ? store.client.userAddress : ""}</div>
+      <div>userAddress: {userAddress}</div>
       <div>
         Balance:{" "}
         {addressBalance?.totalBalance
@@ -100,122 +126,108 @@ export const ZKLogin = () => {
           </button>
         )}
       </div>
-      <div>
-        <button
-          onClick={() => {
-            store.client?.requestTestSUIToken();
-          }}
-        >
-          request test SUI token
-        </button>
-      </div>
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          gap: 20,
-          padding: 20,
-        }}
-      >
-        <hr />
+      {store.client != null && (
+        <div>
+          <button
+            onClick={() => {
+              store.client?.requestTestSUIToken();
+            }}
+          >
+            request test SUI token
+          </button>
+        </div>
+      )}
+      {store.client != null && (
         <div
           style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
             padding: 20,
-            border: "1px solid black",
           }}
         >
-          <div>
-            transaction address:
-            <input
-              style={{
-                width: "100%",
-              }}
-              value={address}
-              onChange={(e) => {
-                setAddress(e.target.value);
-              }}
-            />
+          <hr />
+          <div
+            style={{
+              padding: 20,
+              border: "1px solid black",
+            }}
+          >
+            <div>
+              transaction address:
+              <input
+                style={{
+                  width: "100%",
+                }}
+                value={address}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                }}
+              />
+            </div>
+
+            <div>transaction digest: {digest}</div>
           </div>
 
-          <div>transaction digest: {digest}</div>
-        </div>
-
-        <div>
           <div>
-            sui token
-            <input
-              value={suiToken.toString()}
-              onChange={(e) => {
-                const parseInt = Number.parseInt(e.target.value);
-                if (Number.isNaN(parseInt)) {
-                  setSuiToken(0n);
-                  return;
+            <div>
+              sui token
+              <input
+                value={suiToken.toString()}
+                onChange={(e) => {
+                  const parseInt = Number.parseInt(e.target.value);
+                  if (Number.isNaN(parseInt)) {
+                    setSuiToken(0n);
+                    return;
+                  }
+                  setSuiToken(BigInt(parseInt));
+                }}
+              />
+            </div>
+            <button
+              onClick={async () => {
+                const txb = new TransactionBlock();
+
+                const [coin] = txb.splitCoins(txb.gas, [
+                  suiToken * 1000000000n,
+                ]);
+                txb.transferObjects([coin], address);
+                txb.setSender(store.client!.userAddress);
+
+                const { bytes, signature } = await txb.sign({
+                  client,
+                  signer: store.ephemeralKeyPair,
+                });
+
+                const res = await client.executeTransactionBlock({
+                  transactionBlock: bytes,
+                  signature: store.client!.genZkLoginSignature(signature),
+                });
+                setDigest(res.digest);
+              }}
+            >
+              execute transaction token
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={async () => {
+                if (store.client == null) {
+                  throw new Error("client is not defined");
                 }
-                setSuiToken(BigInt(parseInt));
+                const url = await suiMint(store.client.userAddress, store, {
+                  title: "The Mysterious Map",
+                  imageUrl: "",
+                });
+                setDigest(url);
               }}
-            />
+            >
+              execute mint
+            </button>
           </div>
-          <button
-            onClick={async () => {
-              const txb = new TransactionBlock();
-
-              const [coin] = txb.splitCoins(txb.gas, [suiToken * 1000000000n]);
-              txb.transferObjects([coin], address);
-              txb.setSender(store.client!.userAddress);
-
-              const { bytes, signature } = await txb.sign({
-                client,
-                signer: store.ephemeralKeyPair,
-              });
-
-              const res = await client.executeTransactionBlock({
-                transactionBlock: bytes,
-                signature: store.client!.genZkLoginSignature(signature),
-              });
-              setDigest(res.digest);
-            }}
-          >
-            execute transaction token
-          </button>
         </div>
-        <div>
-          <button
-            onClick={async () => {
-              if (store.client == null) {
-                throw new Error("client is not defined");
-              }
-              console.log(111);
-              const url = await suiMint(store.client.userAddress, store, {
-                title: "The Mysterious Map",
-                imageUrl: "",
-              });
-              setDigest(url);
-
-              // const result = await client.signAndExecuteTransactionBlock({
-              //   transactionBlock: txb,
-              //   signer: store.ephemeralKeyPair,
-              // });
-
-              // console.log(result);
-
-              // const transactionBlock = await client.waitForTransactionBlock({
-              //   digest: result.digest,
-              //   options: {
-              //     showEvents: true,
-              //     showEffects: true,
-              //   },
-              // });
-
-              // console.log(transactionBlock);
-
-              // setDigest(transactionBlock.digest);
-            }}
-          >
-            execute mint
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

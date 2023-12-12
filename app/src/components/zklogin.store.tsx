@@ -37,14 +37,9 @@ export class ZKLoginStore {
   public initialized = false;
 
   ephemeralKeyPair!: Ed25519Keypair;
-  epoch?: {
-    currentEpoch: number;
-    maxEpoch: number;
-  };
-  nonce?: {
-    randomness: string;
-    currentNonce: string;
-  };
+  epoch?: number;
+  nonce?: string;
+  randomness?: string;
 
   client?: ZKLoginClient;
 
@@ -55,12 +50,13 @@ export class ZKLoginStore {
   resetStorage() {
     window.localStorage.removeItem("ephemeralKeyPair");
     window.localStorage.removeItem("randomness");
+    window.localStorage.removeItem("epoch");
   }
 
   private async initialize() {
     this.genEphemeralKeyPair();
     await this.getEpoch();
-    this.genNone();
+    this.genNonce();
 
     this.initialized = true;
   }
@@ -99,15 +95,29 @@ export class ZKLoginStore {
     console.log("privateKey: ", this.ephemeralKeyPair.export().privateKey);
   }
 
-  private async getEpoch() {
-    const { epoch } = await client.getLatestSuiSystemState();
-    this.epoch = {
-      currentEpoch: Number(epoch),
-      maxEpoch: Number(epoch) + 1000,
-    };
+  get maxEpoch() {
+    if (this.epoch == null) {
+      throw new Error("epoch is not defined");
+    }
+
+    return this.epoch + 1000;
   }
 
-  private genNone() {
+  private async getEpoch() {
+    const epoch = window.localStorage.getItem("epoch");
+
+    if (epoch) {
+      this.epoch = parseInt(epoch);
+      return;
+    }
+
+    const res = await client.getLatestSuiSystemState();
+
+    window.localStorage.setItem("epoch", res.epoch);
+    this.epoch = parseInt(res.epoch);
+  }
+
+  private genNonce() {
     if (this.epoch == null) {
       throw new Error("epoch is not defined");
     }
@@ -118,18 +128,12 @@ export class ZKLoginStore {
       window.localStorage.setItem("randomness", randomness);
     }
 
-    const nonce = generateNonce(
-      this.publicKey,
-      this.epoch.maxEpoch,
-      randomness,
-    );
+    const nonce = generateNonce(this.publicKey, this.maxEpoch, randomness);
 
-    console.log({ randomness, nonce });
+    console.log({ randomness, nonce, maxEpoch: this.maxEpoch });
 
-    this.nonce = {
-      randomness,
-      currentNonce: nonce,
-    };
+    this.randomness = randomness;
+    this.nonce = nonce;
   }
 
   async signInWithGoogle(from: string) {
@@ -142,7 +146,7 @@ export class ZKLoginStore {
       redirect_uri: from,
       response_type: "id_token",
       scope: "openid email",
-      nonce: this.nonce.currentNonce,
+      nonce: this.nonce,
     });
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
     // window.location.replace(loginURL);
@@ -161,6 +165,8 @@ class ZKLoginClient {
     readonly id_token: string,
   ) {
     this.jwtPayload = jwtDecode(id_token);
+
+    console.log("jwtPayload: ", (this.jwtPayload as any).nonce);
 
     this.initailize();
   }
@@ -206,8 +212,8 @@ class ZKLoginClient {
       body: JSON.stringify({
         jwt: this.id_token,
         extendedEphemeralPublicKey: this.store.extendedEphemeralPublicKey,
-        maxEpoch: this.store.epoch.maxEpoch,
-        jwtRandomness: this.store.nonce.randomness,
+        maxEpoch: this.store.maxEpoch,
+        jwtRandomness: this.store.randomness,
         salt: this.salt,
         keyClaimName: "sub",
       }),
@@ -243,7 +249,7 @@ class ZKLoginClient {
         ...this.partialZkLoginSignature,
         addressSeed: this.addressSeed,
       },
-      maxEpoch: this.store.epoch.maxEpoch,
+      maxEpoch: this.store.maxEpoch,
       userSignature: signature,
     }) as SerializedSignature;
   }
