@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { BrowserRouter as Router, useRoutes } from "react-router-dom";
 import { Provider } from "react-redux";
 import routes from "~react-pages";
@@ -17,9 +16,7 @@ export default function App() {
       <GlobalStyles />
       <ThemeProvider theme={theme}>
         <Router>
-          <Suspense fallback={<p>Loading...</p>}>
-            <Content />
-          </Suspense>
+          <Content />
         </Router>
       </ThemeProvider>
     </Provider>
