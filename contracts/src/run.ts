@@ -19,7 +19,7 @@ async function main() {
   txb.setGasBudget(5_000_000);
 
   txb.moveCall({
-    target: `0xbb91639293076e9acad4a310d39dfb35ab4974a570a5676f13b66cd83bdf54ce::story_nft::mint`,
+    target: `0xe5e4d08eeb10d9262024aabf2ad37bca427b766c32c7e79c7a18f856a209405e::story_nft::mint`,
     arguments: [
       txb.pure('image 2'),
       txb.pure(
@@ -48,18 +48,23 @@ async function main() {
 
   // define sui client for the desired network.
   const client = new SuiClient({ url: getFullnodeUrl('devnet') });
-  const response = await client.signAndExecuteTransactionBlock({
+  const result = await client.signAndExecuteTransactionBlock({
     signer: keypair,
     transactionBlock: txb,
   });
-  console.log(response);
 
-  // // execute transaction.
-  // let res = client.executeTransactionBlock({
-  //   transactionBlock: bytes,
-  //   signature: serializedSignature,
-  // });
-  // console.log(res);
+  console.log(result);
+  const transactionBlock = await client.waitForTransactionBlock({
+    digest: result.digest,
+    options: {
+      showEvents: true,
+      showEffects: true,
+    },
+  });
+
+  console.log(transactionBlock);
+
+  console.log(`event: ${JSON.stringify(transactionBlock.events, null, 2)}`);
 }
 
 main().catch(err => console.log(err));
