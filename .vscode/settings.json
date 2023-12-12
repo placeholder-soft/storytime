@@ -9,5 +9,8 @@
   "files.associations": {
     "*.xml": "html",
     "*.svg": "html"
+  },
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
   }
 }

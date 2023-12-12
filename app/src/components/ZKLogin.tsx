@@ -14,7 +14,7 @@ function getTransactionBlock(sender: string): TransactionBlock {
   // txb.setGasBudget(5_000_000);
 
   txb.moveCall({
-    target: `0xebc67aa17051eaea7c373e5b72c267dcd7267ce060e79479559eee3eaee3f49b::story_nft_display::mint`,
+    target: `0xe080263e8e3f6169574a24f15cec05d904dbeee9d5d5103b9c8d035efe8eb0d3::story_nft::mint`,
     arguments: [
       txb.pure("image 2"),
       txb.pure(
@@ -200,19 +200,39 @@ export const ZKLogin = () => {
           <div>
             <button
               onClick={async () => {
-                const tx = getTransactionBlock(store.client!.userAddress);
+                const txb = getTransactionBlock(store.client!.userAddress);
 
-                const { bytes, signature } = await tx.sign({
+                const result = await txb.sign({
                   client,
                   signer: store.ephemeralKeyPair,
                 });
 
                 const res = await client.executeTransactionBlock({
-                  transactionBlock: bytes,
-                  signature: store.client!.genZkLoginSignature(signature),
+                  transactionBlock: result.bytes,
+                  signature: store.client!.genZkLoginSignature(
+                    result.signature,
+                  ),
                 });
-
                 setDigest(res.digest);
+
+                // const result = await client.signAndExecuteTransactionBlock({
+                //   transactionBlock: txb,
+                //   signer: store.ephemeralKeyPair,
+                // });
+
+                // console.log(result);
+
+                // const transactionBlock = await client.waitForTransactionBlock({
+                //   digest: result.digest,
+                //   options: {
+                //     showEvents: true,
+                //     showEffects: true,
+                //   },
+                // });
+
+                // console.log(transactionBlock);
+
+                // setDigest(transactionBlock.digest);
               }}
             >
               execute mint
