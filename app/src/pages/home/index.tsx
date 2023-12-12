@@ -10,6 +10,7 @@ import { useLocation } from "react-router";
 import { upsertSalt, ZKLoginStore } from "../../components/zklogin.store.tsx";
 import queryString from "query-string";
 import { auth } from "../../firebase.ts";
+import { Button } from "@radix-ui/themes";
 
 export const StyledContentContainer = styled(ContentContainer)`
   display: flex;
@@ -26,17 +27,15 @@ const StyledTitle = styled.div`
   letter-spacing: -1px;
 `;
 
-const StyledStartButton = styled.button`
+const StyledStartButton = styled(Button)`
   color: #fff;
   width: 188px;
   height: 48px;
-  line-height: 48px;
   border-radius: 10px;
   background: #000;
   text-align: center;
   position: absolute;
   bottom: 40px;
-
   &:hover {
     background: #363636;
   }
@@ -49,6 +48,8 @@ const StyledStartButtonContainer = styled.div`
   background-image: url(${posterImage});
   background-repeat: no-repeat;
   position: relative;
+  background-size: cover;
+  border-radius: 25px;
 `;
 
 const StyledBox = styled.div`

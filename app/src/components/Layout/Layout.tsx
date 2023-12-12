@@ -9,9 +9,9 @@ const StyledHeaderName = styled.a`
   font-weight: 700;
   line-height: 30px;
   letter-spacing: 3px;
-  position: fixed;
+  position: absolute;
   top: 40px;
-  left: 66px;
+  left: 0;
   z-index: 10;
   text-decoration: none;
 `;
@@ -31,6 +31,7 @@ export const PageContainer = styled.div`
 `;
 
 const StyledContentContainer = styled.div`
+  position: relative;
   flex: 1;
   max-width: 1280px;
   margin: 0 auto;

@@ -4,22 +4,19 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { TextField } from "@radix-ui/themes";
 import { createCharacterName } from "../modules/character/actions";
-import { Header, PageContainer } from "../components/Layout/Layout";
+import {ContentContainer, PageContainer} from "../components/Layout/Layout";
 import Button from "../components/Button";
 
-const ContentContainer = styled.div`
+const StyledContentContainer = styled(ContentContainer)`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  width: 100%;
-  height: 100vh;
 `;
 
 const StyledEnterNameText = styled.h1`
   color: #000;
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  font-family: Inter Tight;
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   font-size: 50px;
   font-style: normal;
   font-weight: 600;
@@ -31,7 +28,7 @@ const StyledEnterNameText = styled.h1`
 const StyledInputRoot = styled(TextField.Root)`
   display: flex;
   width: 323px;
-  padding: 16px 24px;
+  padding: 8px 24px;
   justify-content: center;
   align-items: flex-start;
   gap: 10px;
@@ -41,7 +38,6 @@ const StyledInputRoot = styled(TextField.Root)`
 const StyledInput = styled(TextField.Input)`
   color: #898989;
   text-align: center;
-  font-family: Inter;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -65,8 +61,7 @@ const Name = () => {
   const dispatch = useDispatch();
   return (
     <PageContainer>
-      <Header />
-      <ContentContainer>
+      <StyledContentContainer>
         <StyledEnterNameText>Enter Character Name</StyledEnterNameText>
         <StyledInputRoot>
           <StyledInput
@@ -83,7 +78,7 @@ const Name = () => {
         >
           Create Character
         </StyledButton>
-      </ContentContainer>
+      </StyledContentContainer>
     </PageContainer>
   );
 };
