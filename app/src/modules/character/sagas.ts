@@ -15,7 +15,6 @@ let controller = new AbortController();
 // Sample worker saga
 function* createCharacterImage(action: CreateCharacterImageAction) {
   const { sketchBlob, prompt } = action.data;
-  console.log(prompt);
   const formData = new FormData();
   formData.append("sketch_file", sketchBlob);
   formData.append("prompt", addPrefix(prompt));
