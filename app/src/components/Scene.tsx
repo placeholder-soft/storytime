@@ -200,6 +200,7 @@ const Scene = () => {
       character: {
         type: character.characterType,
         name: character.characterName,
+        customType: character.customCharacterType,
       },
       name: wholeStory.title,
       createdAt: new Date().getTime(),
@@ -211,16 +212,15 @@ const Scene = () => {
       scenes: wholeStory.scenes,
     };
     console.log(project);
-    const newProject = await addDoc(
-      collection(db, "projects"),
-      convertUndefinedToNull(project),
-    );
-    // go to mint page
-    const to =
-      searchParams.get("read") === "true"
-        ? `/mint/${newProject.id}?read=true`
-        : `/mint/${newProject.id}`;
-    navigate(to);
+    if (searchParams.get("read") !== "true") {
+      const newProject = await addDoc(
+        collection(db, "projects"),
+        convertUndefinedToNull(project),
+      );
+      navigate("/mint/" + newProject.id);
+    } else {
+      navigate("/mint/" + searchParams.get("id") + "?read=true");
+    }
   };
 
   if (loading) {
