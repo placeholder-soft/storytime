@@ -95,7 +95,7 @@ const LoginButton: FC = () => {
         }
       }}
     >
-      {loading ? "Loading..." : "Get Started"}
+      {loading ? "Loading..." : "Create account with Google"}
     </StyledStartButton>
   );
 };
