@@ -1,5 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -111,11 +111,10 @@ const StyledFooterToolContainer = styled.div`
   align-items: center;
 `;
 
-
 const StyledHeader = styled(Header)`
   top: 39px;
   left: 66px;
-`
+`;
 
 const types = [
   {
@@ -148,10 +147,12 @@ const CanvasPage = () => {
     }
   }, [characterType]);
 
-  const renderPreview = debounce((val) => {
-    setSketchBlob(val);
-    dispatch(createCharacterImage({ sketchBlob: val, prompt }));
-  }, 1000);
+  const renderPreview = useRef(
+    debounce((val) => {
+      setSketchBlob(val);
+      dispatch(createCharacterImage({ sketchBlob: val, prompt }));
+    }, 1000),
+  ).current;
 
   return (
     <>
