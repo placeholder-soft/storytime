@@ -109,6 +109,7 @@ export const StyledStoryItem = styled.div`
 export const StyledStoryImage = styled.img`
   width: 365.5px;
   height: 365.5px;
+  object-fit: cover;
 `;
 
 const StyledInfo = styled.div`
