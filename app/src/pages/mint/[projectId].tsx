@@ -83,21 +83,13 @@ const MinStoryPage: FC = () => {
         </StyledTitleContainer>
         <StyledStoryContainer>
           <StyledStoryItem>
-            <StyledStoryImage
-              src={project?.data()?.coverImage ?? storyImg}
-              alt=""
-            />
+            <StyledStoryImage src={project?.data()?.coverImage} alt="" />
             <StyledInfoContainer>
               <StyledStoryItemTitle>
-                {project?.data()?.title ?? "The Journey to Dragon’s Keep"}
+                {project?.data()?.title}
               </StyledStoryItemTitle>
               <StyledDescription>
-                {project?.data()?.introduction ??
-                  `
-                A playful and bold collage of colors and shapes, blending a
-                retro feel with modern design principles to evoke creativity and
-                the joy of building something unique and impactful.
-                `}
+                {project?.data()?.introduction}
               </StyledDescription>
               <StyledCreateButtonContainer>
                 <SuiMintButton projectId={projectId} />
