@@ -1,5 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -16,7 +16,6 @@ import { Header } from "../../components/Layout/Layout";
 import { Button, DropdownMenu, TextField } from "@radix-ui/themes";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import { CHARACTER_BASE } from "../../shared/characterTypes";
-import { debounce } from "lodash";
 import Loader from "../../components/Loader";
 
 const PreviewContainer = styled.div`
@@ -151,12 +150,16 @@ const CanvasPage = () => {
     }
   }, [characterType]);
 
-  const renderPreview = useRef(
-    debounce((val) => {
-      setSketchBlob(val);
-      dispatch(createCharacterImage({ sketchBlob: val, prompt }));
-    }, 1000),
-  ).current;
+  // NOTE: useRef cached the updated value so I remove the debounce temporarily
+  const renderPreview = (val) => {
+    setSketchBlob(val);
+    dispatch(
+      createCharacterImage({
+        sketchBlob: val,
+        prompt: characterType === "Custom" ? prompt : characterType,
+      }),
+    );
+  };
 
   useEffect(() => {
     if (sketchBlob) {
@@ -203,7 +206,9 @@ const CanvasPage = () => {
                 <StyledInput
                   placeholder="ENTER Custom CHARACTER"
                   value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
+                  onChange={(e) => {
+                    setPrompt(e.target.value);
+                  }}
                 />
               </StyledInputRoot>
             )}

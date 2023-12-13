@@ -31,8 +31,8 @@ const characterReducer = (state = initialState, action: CharacterAction) => {
       return { ...state, characterType, customCharacterType };
     }
     case CREATE_CHARACTER_IMAGE_SUCCESS: {
-      const { blob, characterType } = action.data;
-      return { ...state, characterImage: blob, characterType };
+      const { blob } = action.data;
+      return { ...state, characterImage: blob };
     }
     default:
       return state;

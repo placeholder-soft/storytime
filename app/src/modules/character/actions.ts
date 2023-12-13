@@ -44,7 +44,7 @@ export const createCharacterImage = (
   data,
 });
 
-type CreateCharacterImageSuccessBody = { blob: Blob; characterType: string };
+type CreateCharacterImageSuccessBody = { blob: Blob };
 export type CreateCharacterImageSuccessAction = Action & {
   data: CreateCharacterImageSuccessBody;
 };
