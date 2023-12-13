@@ -5,7 +5,9 @@ import { Navigate } from "react-router";
 
 export function protectedRoute<T extends { user: User }>(component: FC<T>) {
   function ProtectedRoute(props: T) {
-    const [user, setUser] = useState<User | null | undefined>(auth.currentUser);
+    const [user, setUser] = useState<User | null | undefined>(
+      auth.currentUser ?? undefined,
+    );
     useEffect(() => {
       return auth.onAuthStateChanged((user) => setUser(user));
     }, []);
