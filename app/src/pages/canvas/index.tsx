@@ -159,10 +159,10 @@ const CanvasPage = () => {
   ).current;
 
   useEffect(() => {
-    if (loading) {
+    if (sketchBlob) {
       setLoading(false);
     }
-  }, [sketchBlob, loading]);
+  }, [sketchBlob]);
 
   return (
     <>
