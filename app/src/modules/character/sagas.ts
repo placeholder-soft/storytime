@@ -10,8 +10,6 @@ const addPrefix = (val: string) => {
   return `A ${val} character. The character style should be plump character, cute style, character sheet, illustration for book, children's book, watercolor clipart, full Illustration, 4k, sharp focus, watercolor, smooth soft skin, symmetrical, soft lighting, detailed face, concept art, watercolor style, strybk, children's style fairy tales, chibi kawaii, . Octane rendering, 3d, perfect face, detailed face, delicate face, perfect sharp lips, detailed eyes. Craig Davison, Aubrey Beardsley, Conrad Roset, Aikut Aidogdu, Agnes Cecil, watercolor style.`;
 };
 
-let controller = new AbortController();
-
 // Sample worker saga
 function* createCharacterImage(action: CreateCharacterImageAction) {
   const { sketchBlob, prompt } = action.data;
@@ -20,9 +18,6 @@ function* createCharacterImage(action: CreateCharacterImageAction) {
   formData.append("prompt", addPrefix(prompt));
 
   try {
-    controller.abort();
-    controller = new AbortController();
-
     const { data } = yield call(
       axios.post,
       "https://clipdrop-api.co/sketch-to-image/v1/sketch-to-image",
@@ -32,7 +27,6 @@ function* createCharacterImage(action: CreateCharacterImageAction) {
           "x-api-key": import.meta.env.VITE_CLIPDROP_SECRET,
         },
         responseType: "blob",
-        signal: controller.signal,
       },
     );
     yield put(createCharacterImageSuccess({ blob: data }));
