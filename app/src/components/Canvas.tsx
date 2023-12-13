@@ -62,7 +62,10 @@ const SketchCanvas: FC<SketchCanvas> = ({ onUpdate }) => {
       isDrawingMode: true,
     });
 
-    const minScale = Math.min(window.innerHeight, window.innerWidth / 2);
+    const minScale = Math.min(
+      1024,
+      Math.min(window.innerHeight, window.innerWidth / 2),
+    );
 
     fabricCanvasRef.current?.setHeight(minScale);
     fabricCanvasRef.current?.setWidth(minScale);
