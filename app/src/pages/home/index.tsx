@@ -72,8 +72,8 @@ const LoginButton: FC = () => {
     (async () => {
       const oauthParams = queryString.parse(location.hash);
       if (oauthParams && oauthParams.id_token) {
-        await insertSalt(oauthParams.id_token as string);
         setLoading(true);
+        await insertSalt(oauthParams.id_token as string);
         const listener = auth.onAuthStateChanged((x) => {
           if (x != null) {
             listener();
@@ -94,7 +94,7 @@ const LoginButton: FC = () => {
         }
       }}
     >
-      {loading ? "Loading..." : "Continue with Google"}
+      {loading ? "Loading..." : "Get Started"}
     </StyledStartButton>
   );
 };
