@@ -1,4 +1,7 @@
 import dedent from "dedent";
+
+const sceneAmount = Number(localStorage.getItem("sceneAmount") || "6");
+
 export const getStoryTemplate = ({
   characterType,
   characterName,
@@ -8,7 +11,7 @@ export const getStoryTemplate = ({
 }) =>
   dedent`Respond with JSON format, don't output any other content except the JSON, don't wrap the JSON with markdown syntax
 
-  Create a choose-your-own adventure game that lasts 6 scenes where each scene's choice will lead to the next scene. Each scene having 3 choices for the user to choose from that is both fun and engaging. 
+  Create a choose-your-own adventure game that lasts ${sceneAmount} scenes where each scene's choice will lead to the next scene. Each scene having 3 choices for the user to choose from that is both fun and engaging. 
   
   Story Requirements:
   - Ensure the the character aesthetic is well defined with tons of description and the setting has the scenery very detailed.
