@@ -202,6 +202,12 @@ const CanvasPage = () => {
                   value={prompt}
                   onChange={(e) => {
                     setPrompt(e.target.value);
+                    dispatch(
+                      createCharacterType({
+                        characterType: "Custom",
+                        customCharacterType: e.target.value,
+                      }),
+                    );
                   }}
                 />
               </StyledInputRoot>
