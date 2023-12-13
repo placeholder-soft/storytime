@@ -1,5 +1,5 @@
-import axios, { all } from "axios";
-import { call, put, select, takeEvery } from "redux-saga/effects";
+import axios from "axios";
+import { all, call, put, select, takeEvery } from "redux-saga/effects";
 import { StoryProgress } from "../../types/story";
 import {
   INIT_STORY,
@@ -45,7 +45,7 @@ function* initStory(action: InitStoryAction) {
       progress.content,
     );
     const [{ image_url: coverImage }, { image_url: scene1Image }] = yield all([
-      (yield call(
+      call(
         callFunction,
         "generateImage",
         makeImagePrompt({
@@ -54,8 +54,8 @@ function* initStory(action: InitStoryAction) {
           introduction,
           currentScene: scene,
         }),
-      )) as { image_url: string; revised_prompt: string },
-      (yield call(
+      ),
+      call(
         callFunction,
         "generateImage",
         makeImagePrompt({
@@ -64,7 +64,7 @@ function* initStory(action: InitStoryAction) {
           introduction,
           currentScene: scene,
         }),
-      )) as { image_url: string; revised_prompt: string },
+      ),
     ]);
     yield put(
       initStorySuccess({
