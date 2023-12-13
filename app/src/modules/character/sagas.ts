@@ -15,6 +15,7 @@ let controller = new AbortController();
 // Sample worker saga
 function* createCharacterImage(action: CreateCharacterImageAction) {
   const { sketchBlob, prompt } = action.data;
+  console.log(prompt);
   const formData = new FormData();
   formData.append("sketch_file", sketchBlob);
   formData.append("prompt", addPrefix(prompt));
@@ -35,9 +36,7 @@ function* createCharacterImage(action: CreateCharacterImageAction) {
         signal: controller.signal,
       },
     );
-    yield put(
-      createCharacterImageSuccess({ blob: data, characterType: prompt }),
-    );
+    yield put(createCharacterImageSuccess({ blob: data }));
   } catch (e) {
     console.error(e);
   }
