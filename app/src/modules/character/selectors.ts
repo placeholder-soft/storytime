@@ -9,6 +9,11 @@ export const characterBaseSelector = createSelector(
   (character) => character,
 );
 
+export const characterImageDrawingSelector = createSelector(
+  [getCharacterBase],
+  ({ drawing }) => drawing,
+);
+
 export const characterImageSelector = createSelector(
   [getCharacterBase],
   ({ characterImage }) => characterImage,

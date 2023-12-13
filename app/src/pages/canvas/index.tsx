@@ -7,6 +7,7 @@ import Canvas from "../../components/Canvas";
 import {
   characterImageSelector,
   characterTypeSelector,
+  characterImageDrawingSelector,
 } from "../../modules/character/selectors";
 import {
   createCharacterImage,
@@ -136,11 +137,11 @@ const types = [
 const CanvasPage = () => {
   const [sketchBlob, setSketchBlob] = useState<Blob>(new Blob());
   const [prompt, setPrompt] = useState("");
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const characterImage = useSelector(characterImageSelector);
   const navigate = useNavigate();
   const characterType = useSelector(characterTypeSelector);
+  const isDrawing = useSelector(characterImageDrawingSelector);
   const defaultImageUrl = CHARACTER_BASE.find((c) => c.title === characterType)
     ?.image;
 
@@ -161,12 +162,6 @@ const CanvasPage = () => {
     );
   };
 
-  useEffect(() => {
-    if (sketchBlob) {
-      setLoading(false);
-    }
-  }, [sketchBlob]);
-
   return (
     <>
       <StyledHeader />
@@ -174,7 +169,6 @@ const CanvasPage = () => {
         <StyledCanvasContainer>
           <Canvas
             onUpdate={(val) => {
-              setLoading(true);
               renderPreview(val);
             }}
           />
@@ -216,7 +210,7 @@ const CanvasPage = () => {
         </StyledCanvasContainer>
         <PreviewContainer>
           <Preview
-            loading={loading}
+            loading={isDrawing}
             data={characterImage}
             defaultImage={defaultImageUrl}
           />
