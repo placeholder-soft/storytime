@@ -43,9 +43,7 @@ const Story: React.FC = () => {
 
   return (
     <PageContainer>
-      <ContentContainer>
-        {currentSceneIndex > 0 ? <Scene /> : <Cover />}
-      </ContentContainer>
+      {currentSceneIndex > 0 ? <Scene /> : <Cover />}
     </PageContainer>
   );
 };
