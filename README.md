@@ -35,6 +35,5 @@ NFT Mint on SUI
 NFT Mint on AVAX
 <img width="1431" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/3bff4d76-49a7-4e02-9b43-dc2957383489">
 
-
-
-
+## Video of product in Action
+https://youtu.be/8MKDbelCqoo
