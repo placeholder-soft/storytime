@@ -16,7 +16,7 @@ export default function App() {
     <Provider store={store}>
       <GlobalStyles />
       <ThemeProvider theme={theme}>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={null}>
           <Router>
             <Content />
           </Router>
