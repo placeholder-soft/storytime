@@ -9,4 +9,8 @@ export default styled(Button)`
   gap: 10px;
   border-radius: 10px;
   background: #000;
+  cursor: pointer;
+  &:hover {
+    background: #363636;
+  }
 `;

@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { FC, ReactNode } from "react";
 
 const StyledHeaderName = styled.a`
-  z-index: 9;
   color: #000;
   font-size: 20px;
   font-style: normal;
@@ -10,14 +9,20 @@ const StyledHeaderName = styled.a`
   line-height: 30px;
   letter-spacing: 3px;
   position: absolute;
-  top: 40px;
+  top: 0;
   left: 0;
   z-index: 10;
   text-decoration: none;
 `;
 
-export const Header: FC = () => {
-  return <StyledHeaderName href={"/"}>STORYTIME</StyledHeaderName>;
+export const Header: FC<{
+  className?: string;
+}> = (props) => {
+  return (
+    <StyledHeaderName className={props.className} href={"/"}>
+      STORYTIME
+    </StyledHeaderName>
+  );
 };
 
 export const PageContainer = styled.div`

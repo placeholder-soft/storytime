@@ -105,9 +105,17 @@ const StyledFooterToolContainer = styled.div`
   gap: 60px;
   position: absolute;
   bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
+  padding: 0 28px;
+  justify-content: space-between;
+  align-items: center;
 `;
+
+
+const StyledHeader = styled(Header)`
+  top: 39px;
+  left: 66px;
+`
 
 const types = [
   {
@@ -147,7 +155,7 @@ const CanvasPage = () => {
 
   return (
     <>
-      <Header />
+      <StyledHeader />
       <ContentContainer>
         <StyledCanvasContainer>
           <Canvas onUpdate={(val) => renderPreview(val)} />

@@ -36,6 +36,7 @@ const StyledStartButton = styled(Button)`
   text-align: center;
   position: absolute;
   bottom: 40px;
+  cursor: pointer;
   &:hover {
     background: #363636;
   }

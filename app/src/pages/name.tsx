@@ -16,7 +16,6 @@ const StyledContentContainer = styled(ContentContainer)`
 
 const StyledEnterNameText = styled.h1`
   color: #000;
-  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   font-size: 50px;
   font-style: normal;
   font-weight: 600;
@@ -28,7 +27,7 @@ const StyledEnterNameText = styled.h1`
 const StyledInputRoot = styled(TextField.Root)`
   display: flex;
   width: 323px;
-  padding: 8px 24px;
+  padding: 6px 24px;
   justify-content: center;
   align-items: flex-start;
   gap: 10px;
@@ -53,6 +52,10 @@ const StyledButton = styled(Button)`
   gap: 10px;
   border-radius: 10px;
   background: #000;
+  cursor: pointer;
+  &:hover {
+    background: #363636;
+  }
 `;
 
 const Name = () => {

@@ -11,7 +11,10 @@ import { StoryProgressPromptRole } from "../../types/story";
 import { storySelector } from "../../modules/story/selectors";
 import Scene from "../../components/Scene";
 import Cover from "../../components/Cover";
-import { PageContainer, Header } from "../../components/Layout/Layout";
+import {
+  ContentContainer,
+  PageContainer,
+} from "../../components/Layout/Layout";
 
 const Story: React.FC = () => {
   const characterName = useSelector(characterNameSelector);
@@ -40,8 +43,9 @@ const Story: React.FC = () => {
 
   return (
     <PageContainer>
-      <Header />
-      {currentSceneIndex > 0 ? <Scene /> : <Cover />}
+      <ContentContainer>
+        {currentSceneIndex > 0 ? <Scene /> : <Cover />}
+      </ContentContainer>
     </PageContainer>
   );
 };
