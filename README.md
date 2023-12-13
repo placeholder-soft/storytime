@@ -37,3 +37,17 @@ NFT Mint on AVAX
 
 ## Video of product in Action
 https://youtu.be/8MKDbelCqoo
+
+## Authors and acknowledgment
+Team: StoryTime
+Members:
+Jesse Sum | Product | Jessehysum@gmail.com
+
+Cavin | Product & UI/UX Designer | cavin@live.com
+
+Twitter
+@jhysum
+
+Built with
+Typescript
+React Redux
