@@ -36,7 +36,7 @@ You are able to name your beloved character and also choose a base to start from
 
 ### AI-powered Character design
 You only need to sketch something and your imagination will come to life in real time
-![2023-12-13 16 33 53](https://github.com/placeholder-soft/storytime/assets/1687131/9e376f11-286d-4f83-8810-e7d3a3f112dc)
+<img width="1259" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/5e17aae2-110e-419c-a58b-e199ba394e12">
 <img width="1704" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/6ab5bd81-1d42-4247-afef-2919266ba794">
 <img width="1687" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/9ca84cdb-e92d-4fd1-8213-fd23550eb74d">
 <img width="1701" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/e8271ab0-cea7-4a31-abf5-450866cdce4d">
