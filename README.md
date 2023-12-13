@@ -17,10 +17,29 @@ https://app.storytime.one/
 Powered by account abstraction (ZKlogin for SUI, would use privy.io for Avax but not implemented for this hackathon)
 <img width="1579" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/4c1832f7-0801-4c82-bf9b-1e2fb6921c1d">
 
+### Your Story Dashboard
+
+Here is your collection of all previous Storybooks and your entry point to creating more. 
+<img width="1263" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/b06e3e7a-bda9-438b-8285-69b6c6f44172">
+
+
 ### StoryBooks
 
 Stored forever on the blockchain when you mint but displayed on our dashboard. We use Sui's display feature to pull data in.
 <img width="816" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/3658ccd9-04bd-440b-9d96-b0439921d421">
+
+### Base Character Naming and Selection
+
+You are able to name your beloved character and also choose a base to start from for AI generation. 
+<img width="1320" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/1ffac300-7e10-41df-81c0-6c0885ddc028">
+<img width="1361" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/23d4d676-1ba8-4c6d-ad6d-627375da199e">
+
+### AI-powered Character design
+You only need to sketch something and your imagination will come to life in real time
+<img width="1704" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/6ab5bd81-1d42-4247-afef-2919266ba794">
+<img width="1687" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/9ca84cdb-e92d-4fd1-8213-fd23550eb74d">
+<img width="1701" alt="image" src="https://github.com/placeholder-soft/storytime/assets/1687131/e8271ab0-cea7-4a31-abf5-450866cdce4d">
+
 
 ### Inside the Storybook
 
