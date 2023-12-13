@@ -29,7 +29,7 @@ const StyledTitle = styled.div`
 
 const StyledStartButton = styled(Button)`
   color: #fff;
-  width: 188px;
+  padding-inline: 26px;
   height: 48px;
   border-radius: 10px;
   background: #000;
