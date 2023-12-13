@@ -17,6 +17,7 @@ import { Button, DropdownMenu, TextField } from "@radix-ui/themes";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import { CHARACTER_BASE } from "../../shared/characterTypes";
 import { debounce } from "lodash";
+import Loader from "../../components/Loader";
 
 const PreviewContainer = styled.div`
   position: relative;
@@ -31,11 +32,13 @@ const PreviewImage = styled.img`
   width: 100%;
 `;
 
-const Preview: FC<{ data: Blob; defaultImage?: string }> = ({
+const Preview: FC<{ data: Blob; defaultImage?: string; loading: boolean }> = ({
+  loading,
   data,
   defaultImage,
 }) => {
   const imageSrc = data ? URL.createObjectURL(data) : defaultImage;
+  if (loading) return <Loader size={64} />;
   return imageSrc ? <PreviewImage src={imageSrc} alt="" /> : null;
 };
 
@@ -134,6 +137,7 @@ const types = [
 const CanvasPage = () => {
   const [sketchBlob, setSketchBlob] = useState<Blob>(new Blob());
   const [prompt, setPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const characterImage = useSelector(characterImageSelector);
   const navigate = useNavigate();
@@ -154,12 +158,23 @@ const CanvasPage = () => {
     }, 1000),
   ).current;
 
+  useEffect(() => {
+    if (sketchBlob) {
+      setLoading(false);
+    }
+  }, [sketchBlob]);
+
   return (
     <>
       <StyledHeader />
       <ContentContainer>
         <StyledCanvasContainer>
-          <Canvas onUpdate={(val) => renderPreview(val)} />
+          <Canvas
+            onUpdate={(val) => {
+              setLoading(true);
+              renderPreview(val);
+            }}
+          />
           <StyledFooterToolContainer>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
@@ -171,6 +186,7 @@ const CanvasPage = () => {
               <DropdownMenu.Content>
                 {types.map((type) => (
                   <StyledDropdownMenuItem
+                    key={Math.random()}
                     onSelect={() => {
                       dispatch(
                         createCharacterType({ characterType: type.name }),
@@ -194,7 +210,11 @@ const CanvasPage = () => {
           </StyledFooterToolContainer>
         </StyledCanvasContainer>
         <PreviewContainer>
-          <Preview data={characterImage} defaultImage={defaultImageUrl} />
+          <Preview
+            loading={loading}
+            data={characterImage}
+            defaultImage={defaultImageUrl}
+          />
           <StyledSelectButton
             onClick={() => {
               navigate("/story");

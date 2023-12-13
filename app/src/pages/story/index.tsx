@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
 import {
   characterNameSelector,
   characterTypeSelector,
@@ -11,10 +12,12 @@ import { StoryProgressPromptRole } from "../../types/story";
 import { storySelector } from "../../modules/story/selectors";
 import Scene from "../../components/Scene";
 import Cover from "../../components/Cover";
-import {
-  ContentContainer,
-  PageContainer,
-} from "../../components/Layout/Layout";
+import { Header, PageContainer } from "../../components/Layout/Layout";
+
+const StyledHeader = styled(Header)`
+  top: 39px;
+  left: 66px;
+`;
 
 const Story: React.FC = () => {
   const characterName = useSelector(characterNameSelector);
@@ -43,9 +46,8 @@ const Story: React.FC = () => {
 
   return (
     <PageContainer>
-      <ContentContainer>
-        {currentSceneIndex > 0 ? <Scene /> : <Cover />}
-      </ContentContainer>
+      <StyledHeader />
+      {currentSceneIndex > 0 ? <Scene /> : <Cover />}
     </PageContainer>
   );
 };

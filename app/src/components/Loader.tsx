@@ -30,13 +30,13 @@ const thirdAnimation = keyframes`
     }
 `;
 
-const LoaderContainer = styled.div`
-  height: 32px;
-  width: 32px;
+const LoaderContainer = styled.div<{ $size: number }>`
+  height: ${(props) => `${props.$size}px`};
+  width: ${(props) => `${props.$size}px`};
   animation: ${firstAnimation} 4.8s linear infinite;
 `;
 
-const LoaderBody = styled.span`
+const LoaderBody = styled.span<{ $size: number }>`
   display: block;
   position: absolute;
   z-index: 9;
@@ -45,9 +45,10 @@ const LoaderBody = styled.span`
   bottom: 0;
   right: 0;
   margin: auto;
-  height: 32px;
-  width: 32px;
-  clip: rect(0, 32px, 32px, 16px);
+  height: ${(props) => `${props.$size}px`};
+  width: ${(props) => `${props.$size}px`};
+  clip: ${(props) =>
+    `rect(0, ${props.$size}px, ${props.$size}px, ${props.$size / 2}px)`};
   animation: ${secondAnimation} 1.2s linear infinite;
   &::after {
     content: "";
@@ -59,19 +60,23 @@ const LoaderBody = styled.span`
     bottom: 0;
     right: 0;
     margin: auto;
-    height: 32px;
-    width: 32px;
-    clip: rect(0, 32px, 32px, 16px);
-    border: 3px solid rgba(105, 121, 248, 1);
+    height: ${(props) => `${props.$size}px`};
+    width: ${(props) => `${props.$size}px`};
+    clip: ${(props) =>
+      `rect(0, ${props.$size}px, ${props.$size}px, ${props.$size / 2}px)`};
+    border: ${(props) => `${props.$size / 8}`}px solid rgba(105, 121, 248, 1);
     border-radius: 50%;
     animation: ${thirdAnimation} 1.2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
   }
 `;
 
-const Loader: React.FC<{ className?: string }> = ({ className }) => {
+const Loader: React.FC<{ size?: number; className?: string }> = ({
+  className,
+  size = 32,
+}) => {
   return (
-    <LoaderContainer className={className}>
-      <LoaderBody />
+    <LoaderContainer $size={size} className={className}>
+      <LoaderBody $size={size} />
     </LoaderContainer>
   );
 };
